@@ -1,4 +1,4 @@
-🛠️ Day 1 – Project Setup
+ Day 1 – Project Setup
 Today, I began developing a web platform inspired by Airbnb. Here's what I completed:
 
 ✅ Basic project setup (Node.js, Express, folder structure)
