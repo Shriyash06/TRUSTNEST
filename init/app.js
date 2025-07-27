@@ -18,6 +18,7 @@ async function main() {
 // Initialize data
 const initDb = async () => {
   await Visting.deleteMany({});
-  await Visting.insertMany(initDataFile.data); // Using renamed `initDataFile`
+  await Visting.insertMany(initData.data); // Using renamed `initDataFile`
   console.log("Data initialized successfully");
 };
+initDb();

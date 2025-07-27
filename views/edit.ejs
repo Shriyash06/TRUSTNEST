@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>edit the file</title>
+</head>
+<body>
+    <h1> add new route</h1>
+    <form method = "post" action = "/visting/<%=visting.id%>?_method=PUT">
+        <label for="title">Title:</label>
+        <input type="text" id="title" name= "visting[title]" value = "<%= visting.title%>" required><br/><br/><br/>
+        
+        <label for="description">Description:</label>
+        <textarea id="description" name="visting[description]" row = "10" col = "10"  value = "<%= visting.description%>"required></textarea><br/><br/><br/>
+        
+        <label for="price">Price:</label>
+        <input type="number" id="price" name="visting[price]"  value = "<%= visting.price%>"required><br/><br/><br/>
+        
+        <label for="location">Location:</label>
+        <input type="text" id="location" name="visting[location]"value = "<%=visting.location%>" required><br/><br/><br/>
+        
+        <label for="country">Country:</label>
+        <input type="text" id="country" name="visting[country]"  value = "<%=visting.country%>"required><br/><br/><br/>
+        <!-- <label for="image">Image URL:</label>
+        <input type="text" id="image" name="visting[image]"  value = <%= visting.image%>><br/><br/><br/> -->
+        
+        <button type="submit">Create Listing</button>
+    </form>
+    
+</body>
+</html>

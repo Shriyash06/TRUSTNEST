@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>specefic id</title>
+</head>
+<body>
+    <h1> Listing detail : <%= visting.id%></h1>
+    <ul>
+   <li><p> <%= visting.title%></p></li> 
+   <li><p> <%= visting.description%></p></li>  
+     <li> &#8377; <%= visting.price%></li>
+      <li><p> <%= visting.location%></p></li> 
+       <li><p> <%= visting.country%></p></li> 
+       </ul>
+       <a href = "/visting/<%=visting.id%>/edit"> EDIT LISTINGS</a><br/><br/><br/>
+       <form method = "post" action = "/visting/<%=visting.id%>?_method=DELETE">
+        <button> DELETE LISTING</button>
+       </form>
+    
+</body>
+</html>
