@@ -4,10 +4,13 @@ const port = 8080;
 const Visting = require("./models/visting.js");
 const path = require("path");
 const methodOverride = require("method-override");
+const ejsMate = require("ejs-mate");
 app.set("view engine", "ejs");
 app.set("views" , path.join(__dirname, "views"));
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride ('_method'));
+app.engine("ejs" , ejsMate);
+app.use(express.static(path.join(__dirname, "/views/public")));
 app.listen(port , () =>{
     console.log("server is running on " , port);
 });
@@ -64,6 +67,7 @@ app.get("/visting/:id/edit", async(req, res)=>{
     const visting = await Visting.findById(id);
     res.render("edit.ejs", {visting}); // <-- fixed
 });
+// uodate route
 app.put("/visting/:id" , async(req,res) =>{
     let {id} = req.params;
     await Visting.findByIdAndUpdate(id, {... req.body.visting });
