@@ -1,9 +1,19 @@
 <% layout("/layouts/bolierplate.ejs") %>
 <body>
     <h1>ALL LISTINGS</h1>
-    <form method="get" action = "/visting/new">
-        <button> add new listing</button>
-    </form>
+    <!-- <form method="get" action = "/visting/new">
+         <button> add new listing</button> 
+    </form> -->
+     <!-- <% for (let visting of allvistings) { %>
+    <div class="card" style="width: 18rem;">
+  <img src="<%= visting.image%>" class="card-img-top" alt="listings image">
+  <div class="card-body">
+    <h5 class="card-title">Card title</h5>
+    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card’s content.</p>
+    <a href="#" class="btn btn-primary">Go somewhere</a>
+  </div>
+    <% } %>
+</div> -->
     <ul>
         <% for (let visting of allvistings) { %>
             <li>
