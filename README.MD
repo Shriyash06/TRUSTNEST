@@ -57,3 +57,40 @@ Today, I successfully implemented full **CRUD (Create, Read, Update, Delete)** o
 
 ---
 
+📅 Day 4 & 5 – Styling with Bootstrap
+In the last two days, I focused on improving the UI/UX of my Airbnb-inspired web application using Bootstrap 5. The goal was to make the website look clean, responsive, and professional.
+
+✅ What I Did:
+✅ Added a Navbar
+
+Implemented a responsive Bootstrap navbar with branding and navigation links.
+
+Included collapse feature for smaller screens.
+
+✅ Created a Page Header and Footer
+
+Built reusable header.ejs and footer.ejs partials.
+
+Footer contains site info and links (responsive design ensured).
+
+✅ Styled All Major Pages
+
+✔️ Home page (listings grid with cards)
+
+✔️ Show page (detailed property view with image and info)
+
+✔️ New listing form page (form grouped and spaced properly)
+
+✔️ Edit page (styled form with pre-filled values)
+
+✅ Image Handling
+
+Resized listing images using Bootstrap’s img-fluid and object-fit properties.
+
+Ensured all images scale well across devices.
+
+✅ General Styling
+
+Used Bootstrap classes for margins, padding, and spacing.
+
+Applied consistent buttons, fonts, and layout grid system.

@@ -46,3 +46,51 @@ body{
     font-size: 1.2rem;
     margin: 1rem;
 }
+.card{
+    border: none !important;
+    margin-bottom: 2rem !important;
+}
+.card-img-top{
+    border-radius: 1rem !important;
+    width: 100% !important;
+    object-fit: cover !important;
+}
+.card-body{
+    padding: 0 !important;
+}
+.card-text p{
+    font-weight: 400 !important;
+
+}
+.link-dec{
+    text-decoration: none !important;
+
+}
+.card-img-overlay{
+    opacity: 0 !important;
+}
+.card-img-overlay:hover{
+    opacity: 0.2 !important;
+    background-color: white;
+
+}
+.add-btn{
+    border: none !important;
+    background-color: #fe424d !important;
+    color: white !important;
+    padding: 0.5rem 1rem !important;
+    border-radius: 0.5rem !important;
+    font-weight: bold !important;
+    font-size: 1rem !important;
+    transition: background-color 0.3s ease !important;
+
+}
+.add-btn:hover{
+    background-color: green !important;
+    color: white !important;
+    cursor: pointer !important;
+}
+.show-img{
+    height: 30vh;
+    
+}

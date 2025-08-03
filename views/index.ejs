@@ -1,25 +1,25 @@
 <% layout("/layouts/bolierplate.ejs") %>
-<body>
-    <h1>ALL LISTINGS</h1>
-    <!-- <form method="get" action = "/visting/new">
-         <button> add new listing</button> 
-    </form> -->
-     <!-- <% for (let visting of allvistings) { %>
-    <div class="card" style="width: 18rem;">
-  <img src="<%= visting.image%>" class="card-img-top" alt="listings image">
-  <div class="card-body">
-    <h5 class="card-title">Card title</h5>
-    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card’s content.</p>
-    <a href="#" class="btn btn-primary">Go somewhere</a>
-  </div>
-    <% } %>
-</div> -->
-    <ul>
-        <% for (let visting of allvistings) { %>
-            <li>
-                <p><a href = "visting/<%= visting.id%>"><%= visting.title %></a></p>
-            </li>
-        <% } %>
-    </ul>
-</body>
 
+<h1 class="text-center my-4">YASH PRIVATE LIMITED</h1>
+
+<div class="container">
+  <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2 row-cols-lg-4 g-4">
+    <% for (let visting of allvistings) { %>
+        <a href = "/visting/<%=visting.id%>" class = "link-dec">
+<div class="col">
+        <div class="card h-100 shadow-sm">
+          <img src="<%= visting.image.url %>" class="card-img-top" alt="listing image" style="height: 200px; object-fit: cover;">
+           <div class="card-img-overlay">yash shrivastava</div>
+          <div class="card-body">
+            <h5 class="card-title"><%= visting.title %></h5>
+            <p class="card-text">
+              &#8377; <%= visting.price %> / night
+            </p>
+          </div>
+        </div>
+      </div>
+        </a>
+      
+    <% } %>
+  </div>
+</div>
