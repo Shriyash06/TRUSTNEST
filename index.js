@@ -5,6 +5,9 @@ const Visting = require("./models/visting.js");
 const path = require("path");
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
+const wrapAsync = require("./utils/WrapAsync.js");
+const ExpressError = require("./utils/ExpressError.js");
+const Review = require("./models/review.js");
 app.set("view engine", "ejs");
 app.set("views" , path.join(__dirname, "views"));
 app.use(express.urlencoded({ extended: true }));
@@ -49,16 +52,17 @@ app.get("/visting", async (req, res) => {
 app.get("/visting/new" , (req,res) =>{
     res.render("new.ejs");
 });
-app.post("/visting" , async(req,res)=>{
-   const newVisting = new Visting(req.body.visting);
-   await newVisting.save();
-   res.redirect("/visting");
-   
-})
+// create
+app.post("/visting", wrapAsync(async (req, res, next) => {
+    const newVisting = new Visting(req.body.visting);
+    await newVisting.save();
+    res.redirect("/visting");
+}));
+
 // show route
 app.get("/visting/:id" , async(req,res)=>{
     let{id} = req.params;
-    const visting = await Visting.findById(id);
+    const visting = await Visting.findById(id).populate("reviews");
     res.render("show.ejs" , {visting});
 })
 // edit route
@@ -79,3 +83,28 @@ app.delete("/visting/:id" , async(req,res)=>{
     await Visting.findByIdAndDelete(id);
     res.redirect("/visting");
 })
+// post route for review
+app.post("/visting/:id/review" , async(req,res) =>{
+  let visting =  await Visting.findById(req.params.id);
+  let NewReview = new Review(req.body.review);
+  visting.reviews.push(NewReview);
+      await NewReview.save();
+      await visting.save();
+    
+      res.redirect(`/visting/${visting.id}`)
+
+});
+app.delete("/visting/:id/review/:reviewId" , async(req,res)=> {
+    let{id,reviewId} = req.params;
+    await Visting.findByIdAndUpdate(id , {$pull: {reviews : reviewId}});
+    await Review.findByIdAndDelete(reviewId);
+    res.redirect(`/visting/${id}`)
+    
+})
+app.use((err, req, res, next) => {
+    const { statusCode = 500, message = "Something went wrong" } = err;
+   res.render("error.ejs" , {err});
+});
+// app.all("*" ,(req,res,next) => {
+//     next(newExpressError(404 , "page not found"))
+// });

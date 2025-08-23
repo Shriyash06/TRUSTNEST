@@ -5,8 +5,8 @@
 <div class="container">
   <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2 row-cols-lg-4 g-4">
     <% for (let visting of allvistings) { %>
-        <a href = "/visting/<%=visting.id%>" class = "link-dec">
-<div class="col">
+        <a href = "/visting/<%=visting.id%>" class = "link-dec" >
+<div class="col" class = "visting-card" >
         <div class="card h-100 shadow-sm">
           <img src="<%= visting.image.url %>" class="card-img-top" alt="listing image" style="height: 200px; object-fit: cover;">
            <div class="card-img-overlay">yash shrivastava</div>

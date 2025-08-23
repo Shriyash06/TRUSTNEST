@@ -3,10 +3,10 @@
  
   <div class="row">
     <div class = "col-8 offset-2 mt-3">
-       <h1> Listing detail : <%= visting.id%></h1>
+       <h1> <%= visting.title%>></h1>
     
   <img src="<%=visting.image.url%>" class="card-img-top show-img" alt="listing image">
-  <div class="card-body">
+  <div class="card-body" class = "visting-card">
     <p class="card-text"><%=visting.title%></p>
   </div>
 
@@ -15,7 +15,7 @@
   
     
     <ul>
-   <li><p> <%= visting.title%></p></li> 
+ 
    <li><p> <%= visting.description%></p></li>  
      <li> &#8377; <%= visting.price%></li>
       <li><p> <%= visting.location%></p></li> 
@@ -25,6 +25,44 @@
        <form method = "post" action = "/visting/<%=visting.id%>?_method=DELETE">
         <button> DELETE LISTING</button>
        </form>
+       </div>
+       <hr/>
+       <div class = "col -8 offset-2 mb -3" >
+        <h1> leave a review</h1>
+        <form action = "/visting/<%=visting.id%>/review" method = "post" novalidate  class = "needs-validation"> 
+          <div class = "mb-3 mt-3">
+            <label for = "Rating" class = "form-label">Rating</label>
+            <input type = "range" min = "1" max = "7" id = "rating" name="review[rating]" class = "form-range"> 
+          </div>
+          <div class = "mb-3 mt-3">
+            <label for = "comment" class = "form-label">COMMENT</label>
+            <textarea  row = "5" col = "10" id = "comment"  name="review[comment]" class = "form-control" required></textarea>
+            <div class="invalid-feedback">
+              please add some comment for review
+            </div>
+
+
+          </div>
+          <button>SUBMIT</button>
+
+        </form>
+        <hr/>
+        <h1>all reviews</h1>
+      
+       <% for( let review of visting.reviews){ %>
+        <div class="card col-6 mb-5 ms-4">
+          <div class="card" >
+             <div class="card-body">
+              <h5 class="card-title">yash shrivastava</h5>
+              <p class="card-text"><%=review.comment%></p>
+                      <p class="card-text"><%=review.rating%> star</p>
+                      <form class = "mb-2 ms-2" method = "post" action = "/visting/<%=visting.id%>/review/<%=review.id%>?_method=DELETE">
+                        <button class="btn- s-btn btn-dark">DELETE</button>
+                      </form>
+             </div>
+          </div>
+          </div>
+          <%}%>
        </div>
     
 </body>

@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const review = require('./review');
 const Schema = mongoose.Schema;
 
 const vistingSchema = new Schema({
@@ -13,13 +14,16 @@ const vistingSchema = new Schema({
   image: {
     filename: {
       type: String,
-      default: "default.jpg",
-      required: true
+       
+      set : (v) => v==="" ? "https://images.unsplash.com/photo-1682685797743-3a7b6b8d8149?q=80&w=2070&auto=format&fit=crop" :v ,
+     
+      
     },
     url: {
       type: String,
       default: "https://images.unsplash.com/photo-1682685797743-3a7b6b8d8149?q=80&w=2070&auto=format&fit=crop",
-      required: true
+      
+     
     }
   },
   price: {
@@ -33,7 +37,13 @@ const vistingSchema = new Schema({
   country: {
     type: String,
     required: true,
-  }
+  },
+  reviews: [
+    {
+      type : Schema.Types.ObjectId,
+      ref : "Review"
+    }
+  ]
 });
 
 const Visting = mongoose.model("Visting", vistingSchema);

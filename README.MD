@@ -94,3 +94,81 @@ Ensured all images scale well across devices.
 Used Bootstrap classes for margins, padding, and spacing.
 
 Applied consistent buttons, fonts, and layout grid system.
+# Airbnb Clone – Day 7 to 15 Progress
+
+## 📌 Day 7 – Data Handling
+- Implemented **CRUD operations** for listings (Create, Read, Update, Delete).
+- Added proper **form validation** on both client & server side.
+- Handled request and response objects with **Express** to manage listings data.
+
+---
+
+## 📌 Day 8 – Custom Middleware
+- Created **custom middleware** for:
+  - Logging request method & URL.
+  - Validating user input before saving to DB.
+  - Handling errors gracefully with a central error handler.
+- Learned the concept of `next()` in Express for chaining middleware.
+
+---
+
+## 📌 Day 9 – Authentication & Security (Basic)
+- Added middleware for **authentication check** (dummy session logic).
+- Restricted access to **protected routes** (like add/edit/delete listings).
+- Sanitized user input to prevent **XSS/SQL injection**.
+
+---
+
+## 📌 Day 10 – Reviews System Setup
+- Introduced **Review Schema** in MongoDB.
+- Created form to allow users to submit reviews for a listing.
+- Added backend route for handling reviews (`POST /visting/:id/reviews`).
+
+---
+
+## 📌 Day 11 – Establish One-to-Many Relationship
+- Connected **Listings ↔ Reviews** with **Mongoose references**:
+  - One listing can have multiple reviews.
+  - Each review belongs to one listing.
+- Used `populate()` to fetch reviews along with listing data.
+
+---
+
+## 📌 Day 12 – Review Display
+- Displayed reviews on **Show Page** of each listing.
+- Styled reviews section with **Bootstrap**.
+- Added user-friendly messages for "No reviews yet."
+
+---
+
+## 📌 Day 13 – Review Deletion
+- Implemented **Delete Review** route.
+- Used `$pull` operator to remove reference of deleted review from listing.
+- Ensured **cascade delete** (when review is deleted, listing reference updates).
+
+---
+
+## 📌 Day 14 – Middleware for Reviews
+- Added middleware to:
+  - Validate review text & rating.
+  - Ensure only **authenticated users** can post/delete reviews.
+- Applied DRY principle by reusing validation middleware.
+
+---
+
+## 📌 Day 15 – Finalizing Reviews System
+- Completed **One-to-Many Reviews System**:
+  - Listings can hold multiple reviews.
+  - Reviews reference back to their listing.
+- Added **flash messages** for success/failure.
+- Improved **error handling** for invalid review submissions.
+
+---
+
+## ✅ Key Learnings (Day 7–15)
+- Middleware creation & usage in Express.
+- Data validation & error handling.
+- Establishing **One-to-Many relationships** in MongoDB.
+- Building a fully functional **Reviews System**.
+
+---
