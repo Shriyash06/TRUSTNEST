@@ -8,6 +8,8 @@ const ejsMate = require("ejs-mate");
 const wrapAsync = require("./utils/WrapAsync.js");
 const ExpressError = require("./utils/ExpressError.js");
 const Review = require("./models/review.js");
+const cookieParser = require("cookie-parser");
+app.use(cookieParser());
 app.set("view engine", "ejs");
 app.set("views" , path.join(__dirname, "views"));
 app.use(express.urlencoded({ extended: true }));
@@ -105,6 +107,15 @@ app.use((err, req, res, next) => {
     const { statusCode = 500, message = "Something went wrong" } = err;
    res.render("error.ejs" , {err});
 });
+app.get("/getcookies" , (req,res) =>{
+    res.cookie("greeting" , "hello world");
+    res.cookie("made in" , ("india"));
+    res.send("hi , cookie are set")
+});
+app.get("/" , () =>{
+    console.dir(req.cookies);
+    res.send("cookies are displayed");
+})
 // app.all("*" ,(req,res,next) => {
 //     next(newExpressError(404 , "page not found"))
 // });

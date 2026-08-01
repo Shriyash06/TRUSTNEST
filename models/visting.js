@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const review = require('./review');
 const Schema = mongoose.Schema;
+const Review = require("./review.js");
 
 const vistingSchema = new Schema({
   title: {
@@ -45,6 +46,15 @@ const vistingSchema = new Schema({
     }
   ]
 });
+// VistingSchema.post("findOneAndDelete" , async (visting) =>{
+//   if(visting){
+//     await review.deleteMany({
+//       _id : {
+//         $in : visting.reviews
+//       }
+//     })
+//   }
+// })
 
 const Visting = mongoose.model("Visting", vistingSchema);
 module.exports = Visting;
