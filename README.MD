@@ -172,3 +172,130 @@ Applied consistent buttons, fonts, and layout grid system.
 - Building a fully functional **Reviews System**.
 
 ---
+### after long 
+# Express.js Session, Cookies & Flash Message Practice
+
+A small Express.js practice project focused on understanding cookies, sessions, session IDs, flash messages, middleware, and EJS.
+
+## 📚 What I Learned
+
+Today I implemented and practiced the following concepts:
+
+### 1. Cookies 🍪
+
+- Understanding browser cookies
+- Creating cookies using Express
+- Understanding how cookies are stored on the client side
+- Understanding the purpose of `httpOnly`
+- Setting cookie expiration using `maxAge` and `expires`
+
+### 2. Sessions 🔐
+
+- Setting up sessions using `express-session`
+- Understanding `req.session`
+- Storing user information inside a session
+- Reading session data across different routes
+- Understanding session IDs and session cookies
+- Understanding session expiration
+
+Example:
+
+```js
+req.session.name = name;
+req.session.name
+const sessionOption = {
+    secret: "this is a secretcode",
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+        httpOnly: true,
+        maxAge: 7 * 24 * 60 * 60 * 1000
+    }
+};
+Learned the purpose of:
+
+secret
+resave
+saveUninitialized
+httpOnly
+maxAge
+expires
+4. Flash Messages 💬
+
+Implemented flash messages using express-flash.
+
+Used flash messages for temporary notifications such as:
+
+Registration successful
+Registration failed
+
+Example:
+
+req.flash("success", "Registration Successful!");
+
+Retrieved the message using:
+
+req.flash("success");
+5. res.locals
+
+Learned how to make flash messages available to EJS templates using middleware:
+
+app.use((req, res, next) => {
+    res.locals.success = req.flash("success");
+    next();
+});
+
+The message can then be displayed in EJS:
+
+<%= success %>
+6. Middleware
+
+Practiced Express middleware and understood the role of:
+
+next();
+
+Middleware was used to process requests before passing them to the next middleware or route.
+
+🔄 Request Flow
+Browser
+   ↓
+Express Server
+   ↓
+Middleware
+   ↓
+Session / Flash
+   ↓
+Route
+   ↓
+EJS Template
+   ↓
+Response
+🧠 Key Concepts
+Session vs Cookie
+
+Cookie:
+Small piece of data stored on the client/browser.
+
+Session:
+Server-side mechanism used to maintain user-specific state across requests.
+
+The browser generally stores a session identifier in a cookie, which allows the server to associate subsequent requests with the corresponding session.
+
+⏳ Session Expiration
+
+Practiced setting a 7-day cookie lifetime:
+
+maxAge: 7 * 24 * 60 * 60 * 1000
+
+Also learned that:
+
+maxAge represents a duration in milliseconds.
+expires represents the expiration date/time.
+🛠️ Technologies Used
+Node.js
+Express.js
+express-session
+express-flash
+cookie-parser
+EJS
+JavaScript

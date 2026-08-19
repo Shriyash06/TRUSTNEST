@@ -9,7 +9,26 @@ const wrapAsync = require("./utils/WrapAsync.js");
 const ExpressError = require("./utils/ExpressError.js");
 const Review = require("./models/review.js");
 const cookieParser = require("cookie-parser");
+const expressSession = require("express-session");
+const flash = require("express-flash");
+const sessionOption = {
+    secret: "this is a secretcode",
+    resave: false,
+    saveUninitialized: true,
+    cookie :{
+        httpOnly: true,
+        expires : Date.now() + 7*24*60*60*1000,
+        maxAge : 7*24*60*60*1000,
+
+    }
+};
 app.use(cookieParser());
+app.use(expressSession(sessionOption));
+app.use(flash());
+app.use((req,res,next)=>{
+    res.locals.sucess = req.flash("sucess");
+    next();
+})
 app.set("view engine", "ejs");
 app.set("views" , path.join(__dirname, "views"));
 app.use(express.urlencoded({ extended: true }));
@@ -57,6 +76,7 @@ app.get("/visting/new" , (req,res) =>{
 // create
 app.post("/visting", wrapAsync(async (req, res, next) => {
     const newVisting = new Visting(req.body.visting);
+    req.flash("sucess" , "🎉 New Visting Added! ✅");
     await newVisting.save();
     res.redirect("/visting");
 }));
@@ -71,18 +91,21 @@ app.get("/visting/:id" , async(req,res)=>{
 app.get("/visting/:id/edit", async(req, res)=>{
     let{id} = req.params;
     const visting = await Visting.findById(id);
+    req.flash("sucess" , "🎉 Visting Updated! ✅");
     res.render("edit.ejs", {visting}); // <-- fixed
 });
 // uodate route
 app.put("/visting/:id" , async(req,res) =>{
     let {id} = req.params;
     await Visting.findByIdAndUpdate(id, {... req.body.visting });
+
     res.redirect(`/visting/${id}`);
 });
 // delete route
 app.delete("/visting/:id" , async(req,res)=>{
     let{id} = req.params;
     await Visting.findByIdAndDelete(id);
+    req.flash("sucess" , "🎉 Visting Deleted! ✅");
     res.redirect("/visting");
 })
 // post route for review
@@ -90,6 +113,7 @@ app.post("/visting/:id/review" , async(req,res) =>{
   let visting =  await Visting.findById(req.params.id);
   let NewReview = new Review(req.body.review);
   visting.reviews.push(NewReview);
+  req.flash("sucess" , "🎉 Review Added! ✅");
       await NewReview.save();
       await visting.save();
     
@@ -99,6 +123,7 @@ app.post("/visting/:id/review" , async(req,res) =>{
 app.delete("/visting/:id/review/:reviewId" , async(req,res)=> {
     let{id,reviewId} = req.params;
     await Visting.findByIdAndUpdate(id , {$pull: {reviews : reviewId}});
+    req.flash("sucess" , "🎉 Review Deleted! ✅");
     await Review.findByIdAndDelete(reviewId);
     res.redirect(`/visting/${id}`)
     
