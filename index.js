@@ -27,6 +27,7 @@ app.use(expressSession(sessionOption));
 app.use(flash());
 app.use((req,res,next)=>{
     res.locals.sucess = req.flash("sucess");
+    res.locals.err = req.flash("err");
     next();
 })
 app.set("view engine", "ejs");
@@ -82,22 +83,50 @@ app.post("/visting", wrapAsync(async (req, res, next) => {
 }));
 
 // show route
-app.get("/visting/:id" , async(req,res)=>{
-    let{id} = req.params;
+// SHOW Route
+app.get("/visting/:id", async (req, res) => {
+    let { id } = req.params;
+
     const visting = await Visting.findById(id).populate("reviews");
-    res.render("show.ejs" , {visting});
-})
-// edit route
-app.get("/visting/:id/edit", async(req, res)=>{
-    let{id} = req.params;
-    const visting = await Visting.findById(id);
-    req.flash("sucess" , "🎉 Visting Updated! ✅");
-    res.render("edit.ejs", {visting}); // <-- fixed
+
+    if (!visting) {
+        req.flash("err", "This listing does not exist.");
+        return res.redirect("/visting");   // return is important
+    }
+
+    res.render("show.ejs", { visting });
 });
-// uodate route
-app.put("/visting/:id" , async(req,res) =>{
-    let {id} = req.params;
-    await Visting.findByIdAndUpdate(id, {... req.body.visting });
+
+
+// EDIT Route
+app.get("/visting/:id/edit", async (req, res) => {
+    let { id } = req.params;
+
+    const visting = await Visting.findById(id);
+
+    if (!visting) {
+        req.flash("err", "This listing does not exist.");
+        return res.redirect("/visting");
+    }
+
+    res.render("edit.ejs", { visting });
+});
+
+
+// UPDATE Route
+app.put("/visting/:id", async (req, res) => {
+    let { id } = req.params;
+
+    const visting = await Visting.findById(id);
+
+    if (!visting) {
+        req.flash("err", "This listing does not exist.");
+        return res.redirect("/visting");
+    }
+
+    await Visting.findByIdAndUpdate(id, { ...req.body.visting });
+
+    req.flash("sucess", "🎉 Visting Updated! ✅");
 
     res.redirect(`/visting/${id}`);
 });
