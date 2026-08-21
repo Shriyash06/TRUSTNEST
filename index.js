@@ -11,6 +11,9 @@ const Review = require("./models/review.js");
 const cookieParser = require("cookie-parser");
 const expressSession = require("express-session");
 const flash = require("express-flash");
+const passport = require("passport");
+const LocalStrategy = require("passport-local");
+const User = require("./models/user.js");
 const sessionOption = {
     secret: "this is a secretcode",
     resave: false,
@@ -25,6 +28,11 @@ const sessionOption = {
 app.use(cookieParser());
 app.use(expressSession(sessionOption));
 app.use(flash());
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 app.use((req,res,next)=>{
     res.locals.sucess = req.flash("sucess");
     res.locals.err = req.flash("err");
@@ -67,6 +75,16 @@ app.get("/" , (req,res)=>{
 //     console.log("sample are saved" , sampleVisting);
 // })
 // index route
+app.get("/demouser" , async(req,res)=>{
+    let sampleUser = new User({
+        email : "yshrivastava194@gmail.com",
+       username : "yash shrivastava"
+    });
+     let registeredUser =await User.register(sampleUser, "yash1234");
+     res.send(registeredUser);
+     console.log(registeredUser);
+
+})
 app.get("/visting", async (req, res) => {
     const allvistings = await Visting.find();
     res.render("index.ejs", { allvistings }); // <-- fixed

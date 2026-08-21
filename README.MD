@@ -299,3 +299,93 @@ express-flash
 cookie-parser
 EJS
 JavaScript
+# Authentication Setup — Daily Progress
+
+## 📅 Date
+
+21 August 2026
+
+## 🚀 Today's Work
+
+Today I worked on setting up authentication using **Passport.js** with **MongoDB and Mongoose**.
+
+### 1. Installed Authentication Packages
+
+Installed:
+
+* `passport`
+* `passport-local`
+* `passport-local-mongoose`
+
+### 2. Created User Schema
+
+Created a Mongoose `User` schema with:
+
+* Email
+* Username
+* Authentication-related fields
+
+### 3. Integrated Passport Local Mongoose
+
+Integrated `passport-local-mongoose` with the User schema using:
+
+```js
+userSchema.plugin(passportLocalMongoose);
+```
+
+### 4. Debugging
+
+Solved multiple issues during setup:
+
+* npm `ETIMEDOUT` network error
+* `Cannot find module 'passport-local'`
+* `schema.plugin()` received an object instead of a function
+* Fixed the package import/export issue
+
+### 5. Successful User Creation
+
+Successfully created a user in MongoDB.
+
+Passport Local Mongoose generated:
+
+* `username`
+* `salt`
+* `hash`
+
+The password is stored as a **hash + salt**, rather than plain text.
+
+## 🧠 What I Learned
+
+* How npm package installation works
+* How to read and debug Node.js errors
+* How Passport.js works with Express
+* How `passport-local` handles username/password authentication
+* How `passport-local-mongoose` integrates authentication with Mongoose
+* How password hashing and salting work
+* How to debug instead of ignoring errors
+
+## ✅ Current Progress
+
+```text
+MongoDB                  ✅
+Mongoose                  ✅
+Passport                  ✅
+Passport Local            ✅
+Passport Local Mongoose   ✅
+User Schema               ✅
+User Creation             ✅
+Password Hashing          ✅
+```
+
+## 🔜 Next Step
+
+* Configure `passport.serializeUser()`
+* Configure `passport.deserializeUser()`
+* Configure `LocalStrategy`
+* Build login functionality
+* Build logout functionality
+* Test authenticated sessions
+
+---
+
+> **Today's lesson:** Don't ignore the error. Read the error, understand the error, and debug it.
