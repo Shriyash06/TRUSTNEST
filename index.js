@@ -75,16 +75,61 @@ app.get("/" , (req,res)=>{
 //     console.log("sample are saved" , sampleVisting);
 // })
 // index route
-app.get("/demouser" , async(req,res)=>{
-    let sampleUser = new User({
-        email : "yshrivastava194@gmail.com",
-       username : "yash shrivastava"
-    });
-     let registeredUser =await User.register(sampleUser, "yash1234");
-     res.send(registeredUser);
-     console.log(registeredUser);
+// app.get("/demouser" , async(req,res)=>{
+//     let sampleUser = new User({
+//         email : "yshrivastava194@gmail.com",
+//        username : "yash shrivastava"
+//     });
+//      let registeredUser =await User.register(sampleUser, "yash1234");
+//      res.send(registeredUser);
+//      console.log(registeredUser);
 
-})
+// });
+app.get("/signup" , (req,res)=>{
+    res.render("users/signup.ejs")
+    console.log("signup route is working");
+});
+app.post("/signup", wrapAsync(async (req, res) => {
+    try{let { username, email, password } = req.body;
+
+    const newUser = new User({
+        username,
+        email
+    });
+
+    const registeredUser = await User.register(newUser, password);
+
+    console.log(registeredUser);
+
+    req.flash("sucess", "🎉 Welcome to Wanderlust! ✅");
+
+    res.redirect("/visting");
+}catch(err){
+    req.flash("err" , "❌ Invalid username or password. Please try again. ❌");
+    res.redirect("/signup");
+
+    
+}}));
+app.get("/login" , (req,res)=>{
+    res.render("users/login.ejs");
+    // res.flash("err" , "❌ Invalid username or password. Please try again. ❌");
+    console.log("login route is working");
+});
+app.post(
+  "/login",
+  passport.authenticate("local", {
+    failureRedirect: "/login",
+    failureFlash: true
+  }),
+  async (req, res) => {
+   
+      req.flash("sucess", "🎉 Welcome back! ✅");
+      console.log("login is working");
+      
+      res.redirect("/visting");
+    
+  }
+);
 app.get("/visting", async (req, res) => {
     const allvistings = await Visting.find();
     res.render("index.ejs", { allvistings }); // <-- fixed

@@ -1,0 +1,53 @@
+<% layout("/layouts/bolierplate.ejs") %>
+
+<div class="row">
+    <h1 class="col-6 offset-3"> LOGIN to...</h1>
+
+    <div class="col-6 offset-3">
+        <form method="POST" action="/login" novalidate class="needs-validation">
+
+            <!-- USERNAME -->
+            <div class="mb-3">
+                <label for="username" class="form-label">USERNAME</label>
+
+                <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    placeholder="Enter your USERNAME"
+                    class="form-control"
+                    required
+                >
+
+                <div class="valid-feedback">
+                    It looks good!
+                </div>
+            </div>
+           <!-- PASSWORD -->
+            <div class="mb-3">
+                <label for="password" class="form-label">PASSWORD</label>
+
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Enter your password"
+                    class="form-control"
+                    required
+                >
+
+                <div class="valid-feedback">
+                    It looks good!
+                </div>
+                <div class = "invalid-feedback">
+                   please set as a special character, a number, and a capital letter.
+
+                </div>
+    
+            </div>
+
+            <button class="btn btn-success">LOGIN</button>
+
+        </form>
+        </div>
+        </div>

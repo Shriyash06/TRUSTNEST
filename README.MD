@@ -389,3 +389,73 @@ Password Hashing          ✅
 ---
 
 > **Today's lesson:** Don't ignore the error. Read the error, understand the error, and debug it.
+# Authentication – Login & Signup
+
+## Features
+- User Signup
+- User Login
+- Passport Local Authentication
+- Session Management
+- Success Flash Message
+- Failed Login Handling
+
+## Login Flow
+
+User enters credentials
+        ↓
+POST /login
+        ↓
+Passport.authenticate("local")
+        ↓
+   ┌────┴────┐
+   ↓         ↓
+SUCCESS     FAILURE
+   ↓         ↓
+Success     failureFlash
+Flash       ↓
+   ↓       /login
+/visting
+
+## Problem I Faced
+
+### Problem 1: Authentication was failing
+What happened:
+...
+
+What I checked:
+...
+
+What I changed:
+...
+
+Result:
+...
+
+### Problem 2: Success flash was not showing
+...
+
+### Problem 3: Failed-login flash
+...
+
+## Important Code
+
+### POST /login
+...
+
+### GET /login
+...
+
+## Debugging Notes
+- Check whether POST /login is triggered
+- Check Passport authentication result
+- Check session configuration
+- Check flash messages
+- Check redirect
+- Check EJS rendering
+
+## Lessons Learned
+
+- `failureRedirect` handles failed authentication.
+- `failureFlash` creates a flash message for authentication failure.
+- The success callback runs only after successful authentication.
+- `try/catch` does not replace Passport's authentication failure handling.
