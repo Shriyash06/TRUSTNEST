@@ -1,238 +1,603 @@
 const express = require("express");
 const app = express();
 const port = 8080;
+
 const Visting = require("./models/visting.js");
+const Review = require("./models/review.js");
+const User = require("./models/user.js");
+
 const path = require("path");
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
+
 const wrapAsync = require("./utils/WrapAsync.js");
 const ExpressError = require("./utils/ExpressError.js");
-const Review = require("./models/review.js");
+
 const cookieParser = require("cookie-parser");
 const expressSession = require("express-session");
 const flash = require("express-flash");
+
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
-const User = require("./models/user.js");
+const passportLocalMongoose =
+    require("passport-local-mongoose").default;
+
+const ReviewModel = Review;
+
+
+// ==============================
+// SESSION CONFIGURATION
+// ==============================
+
 const sessionOption = {
     secret: "this is a secretcode",
     resave: false,
     saveUninitialized: true,
-    cookie :{
+    cookie: {
         httpOnly: true,
-        expires : Date.now() + 7*24*60*60*1000,
-        maxAge : 7*24*60*60*1000,
-
+        expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        maxAge: 7 * 24 * 60 * 60 * 1000
     }
 };
+
+
+// ==============================
+// MIDDLEWARE
+// ==============================
+
 app.use(cookieParser());
+
 app.use(expressSession(sessionOption));
+
 app.use(flash());
+
 app.use(passport.initialize());
 app.use(passport.session());
+
+app.use(express.urlencoded({ extended: true }));
+
+app.use(methodOverride("_method"));
+
+app.use(express.static(path.join(__dirname, "/views/public")));
+
+
+// ==============================
+// PASSPORT CONFIGURATION
+// ==============================
+
 passport.use(new LocalStrategy(User.authenticate()));
+
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
-app.use((req,res,next)=>{
-    res.locals.sucess = req.flash("sucess");
-    res.locals.err = req.flash("err");
-    next();
-})
-app.set("view engine", "ejs");
-app.set("views" , path.join(__dirname, "views"));
-app.use(express.urlencoded({ extended: true }));
-app.use(methodOverride ('_method'));
-app.engine("ejs" , ejsMate);
-app.use(express.static(path.join(__dirname, "/views/public")));
-app.listen(port , () =>{
-    console.log("server is running on " , port);
-});
-const mongoose = require('mongoose');
 
-main().then(()=>{
-    console.log("connected to database sucessfully")
-})
-.catch(err => console.log(err));
+
+// ==============================
+// FLASH VARIABLES
+// ==============================
+
+app.use((req, res, next) => {
+    res.locals.sucess = req.flash("sucess");
+
+    // IMPORTANT:
+    // Passport failureFlash uses "error"
+    res.locals.err = req.flash("error");
+    res.locals.currentUser = req.user;
+
+    next();
+});
+
+
+// ==============================
+// EJS CONFIGURATION
+// ==============================
+
+app.set("view engine", "ejs");
+
+app.set("views", path.join(__dirname, "views"));
+
+app.engine("ejs", ejsMate);
+
+
+// ==============================
+// SERVER
+// ==============================
+
+app.listen(port, () => {
+    console.log("server is running on", port);
+});
+
+
+// ==============================
+// DATABASE
+// ==============================
+
+const mongoose = require("mongoose");
+
+main()
+    .then(() => {
+        console.log("connected to database successfully");
+    })
+    .catch((err) => console.log(err));
 
 async function main() {
-  await mongoose.connect('mongodb://127.0.0.1:27017/banderlust');
-
-  
+    await mongoose.connect(
+        "mongodb://127.0.0.1:27017/banderlust"
+    );
 }
-app.get("/" , (req,res)=>{
-    res.send("root is working" +"  "  + port)
-});
-// app.get("/visting" , async(req,res) =>{
-//     let sampleVisting = new Visting({
-//         title : "my new villa",
-//         description : "this is your pocket friendly",
-//         location : "goa , calangute",
-//         country : "india",
-//         price : 10000
-//     })
-//     await sampleVisting.save();
-//     res.send("visting model is working");
-//     console.log("sample are saved" , sampleVisting);
-// })
-// index route
-// app.get("/demouser" , async(req,res)=>{
-//     let sampleUser = new User({
-//         email : "yshrivastava194@gmail.com",
-//        username : "yash shrivastava"
-//     });
-//      let registeredUser =await User.register(sampleUser, "yash1234");
-//      res.send(registeredUser);
-//      console.log(registeredUser);
 
-// });
-app.get("/signup" , (req,res)=>{
-    res.render("users/signup.ejs")
+
+// ==============================
+// ROOT
+// ==============================
+
+app.get("/", (req, res) => {
+    res.send("root is working " + port);
+});
+
+
+// ==============================
+// AUTHENTICATION MIDDLEWARE
+// ==============================
+
+const isLoggedIn = (req, res, next) => {
+    // console.log("req.user", req.user);
+    // console.log(req.path , ".." , req.originalUrl);
+    req.session.redirectTo = req.originalUrl;
+
+    
+    if (!req.isAuthenticated()) {
+
+
+        req.flash(
+            "err",
+            "❌ You must be logged in first!"
+        );
+
+        return res.redirect("/login");
+    }
+
+    next();
+};
+const SavedUrl = (req,res,next)=>{
+   if(req.session.redirectTo){
+    res.locals.redirectTo = req.session.redirectTo;
+   }
+   next();
+}
+
+
+
+// ==============================
+// SIGNUP
+// ==============================
+
+app.get("/signup", (req, res) => {
+
+    res.render("users/signup.ejs");
+
     console.log("signup route is working");
 });
-app.post("/signup", wrapAsync(async (req, res) => {
-    try{let { username, email, password } = req.body;
 
-    const newUser = new User({
-        username,
-        email
-    });
 
-    const registeredUser = await User.register(newUser, password);
+app.post(
+    "/signup",
+    wrapAsync(async (req, res) => {
 
-    console.log(registeredUser);
+        try {
 
-    req.flash("sucess", "🎉 Welcome to Wanderlust! ✅");
+            const {
+                username,
+                email,
+                password
+            } = req.body;
 
-    res.redirect("/visting");
-}catch(err){
-    req.flash("err" , "❌ Invalid username or password. Please try again. ❌");
-    res.redirect("/signup");
+            const newUser = new User({
+                username,
+                email
+            });
 
-    
-}}));
-app.get("/login" , (req,res)=>{
+            const registeredUser =
+                await User.register(
+                    newUser,
+                    password
+                );
+
+            console.log(registeredUser);
+
+            req.flash(
+                "sucess",
+                "🎉 Welcome to Wanderlust! ✅"
+            );
+           req.login(registeredUser, (err)=>{
+            if(err){
+                return next(err);
+            }
+            req.flash("sucess" , "🎉 Welcome to Wanderlust!✅");
+                 res.redirect("/visting");
+
+           })
+        
+
+   
+
+        } catch (err) {
+
+            req.flash(
+                "err",
+                "❌ Invalid username or password. Please try again. ❌"
+            );
+
+            res.redirect("/signup");
+        }
+    })
+);
+
+
+// ==============================
+// LOGIN
+// ==============================
+
+app.get("/login", (req, res) => {
+
     res.render("users/login.ejs");
-    // res.flash("err" , "❌ Invalid username or password. Please try again. ❌");
+
     console.log("login route is working");
 });
+
+
 app.post(
-  "/login",
-  passport.authenticate("local", {
-    failureRedirect: "/login",
-    failureFlash: true
-  }),
-  async (req, res) => {
+    "/login",
+    SavedUrl,
    
-      req.flash("sucess", "🎉 Welcome back! ✅");
-      console.log("login is working");
-      
-      res.redirect("/visting");
-    
-  }
+
+    passport.authenticate("local", {
+        failureRedirect: "/login",
+        failureFlash: true
+    }),
+
+    (req, res) => {
+
+        req.flash(
+            "sucess",
+            "🎉 Welcome back! ✅"
+        );
+
+        console.log("login is working");
+        const redirectUrl = res.locals.redirectTo || "/visting";
+        res.redirect(redirectUrl);
+        
+    }
 );
-app.get("/visting", async (req, res) => {
-    const allvistings = await Visting.find();
-    res.render("index.ejs", { allvistings }); // <-- fixed
+
+
+// ==============================
+// LOGOUT
+// ==============================
+
+app.get("/logout", (req, res, next) => {
+
+    req.logout((err) => {
+
+        if (err) {
+            return next(err);
+        }
+
+        req.flash(
+            "sucess",
+            "🎉 You have been logged out! ✅"
+        );
+
+        res.redirect("/visting");
+    });
 });
-app.get("/visting/new" , (req,res) =>{
-    res.render("new.ejs");
-});
-// create
-app.post("/visting", wrapAsync(async (req, res, next) => {
-    const newVisting = new Visting(req.body.visting);
-    req.flash("sucess" , "🎉 New Visting Added! ✅");
-    await newVisting.save();
-    res.redirect("/visting");
-}));
 
-// show route
-// SHOW Route
-app.get("/visting/:id", async (req, res) => {
-    let { id } = req.params;
 
-    const visting = await Visting.findById(id).populate("reviews");
+// ==============================
+// INDEX / ALL LISTINGS
+// ==============================
 
-    if (!visting) {
-        req.flash("err", "This listing does not exist.");
-        return res.redirect("/visting");   // return is important
+app.get(
+    "/visting",
+    wrapAsync(async (req, res) => {
+
+        const allvistings =
+            await Visting.find();
+
+        res.render(
+            "index.ejs",
+            {
+                allvistings
+            }
+        );
+    })
+);
+
+
+// ==============================
+// NEW LISTING
+// ==============================
+
+app.get(
+    "/visting/new",
+    isLoggedIn,
+    (req, res) => {
+
+        res.render("new.ejs");
     }
-
-    res.render("show.ejs", { visting });
-});
+);
 
 
-// EDIT Route
-app.get("/visting/:id/edit", async (req, res) => {
-    let { id } = req.params;
+// ==============================
+// CREATE LISTING
+// ==============================
 
-    const visting = await Visting.findById(id);
+app.post(
+    "/visting",
+    isLoggedIn,
 
-    if (!visting) {
-        req.flash("err", "This listing does not exist.");
-        return res.redirect("/visting");
+    wrapAsync(async (req, res) => {
+
+        const newVisting =
+            new Visting(req.body.visting);
+
+        await newVisting.save();
+
+        req.flash(
+            "sucess",
+            "🎉 New Visting Added! ✅"
+        );
+
+        res.redirect("/visting");
+    })
+);
+
+
+// ==============================
+// SHOW LISTING
+// ==============================
+
+app.get(
+    "/visting/:id",
+
+    wrapAsync(async (req, res) => {
+
+        const { id } = req.params;
+
+        const visting =
+            await Visting
+                .findById(id)
+                .populate("reviews");
+
+        if (!visting) {
+
+            req.flash(
+                "err",
+                "This listing does not exist."
+            );
+
+            return res.redirect("/visting");
+        }
+
+        res.render(
+            "show.ejs",
+            {
+                visting
+            }
+        );
+    })
+);
+
+
+// ==============================
+// EDIT LISTING
+// ==============================
+
+app.get(
+    "/visting/:id/edit",
+    isLoggedIn,
+
+    wrapAsync(async (req, res) => {
+
+        const { id } = req.params;
+
+        const visting =
+            await Visting.findById(id);
+
+        if (!visting) {
+
+            req.flash(
+                "err",
+                "This listing does not exist."
+            );
+
+            return res.redirect("/visting");
+        }
+
+        res.render(
+            "edit.ejs",
+            {
+                visting
+            }
+        );
+    })
+);
+
+
+// ==============================
+// UPDATE LISTING
+// ==============================
+
+app.put(
+    "/visting/:id",
+    isLoggedIn,
+
+    wrapAsync(async (req, res) => {
+
+        const { id } = req.params;
+
+        const visting =
+            await Visting.findById(id);
+
+        if (!visting) {
+
+            req.flash(
+                "err",
+                "This listing does not exist."
+            );
+
+            return res.redirect("/visting");
+        }
+
+        await Visting.findByIdAndUpdate(
+            id,
+            {
+                ...req.body.visting
+            }
+        );
+
+        req.flash(
+            "sucess",
+            "🎉 Visting Updated! ✅"
+        );
+
+        res.redirect(`/visting/${id}`);
+    })
+);
+
+
+// ==============================
+// DELETE LISTING
+// ==============================
+
+app.delete(
+    "/visting/:id",
+    isLoggedIn,
+
+    wrapAsync(async (req, res) => {
+
+        const { id } = req.params;
+
+        await Visting.findByIdAndDelete(id);
+
+        req.flash(
+            "sucess",
+            "🎉 Visting Deleted! ✅"
+        );
+
+        res.redirect("/visting");
+    })
+);
+
+
+// ==============================
+// ADD REVIEW
+// ==============================
+
+app.post(
+    "/visting/:id/review",
+    isLoggedIn,
+
+    wrapAsync(async (req, res) => {
+
+        const visting =
+            await Visting.findById(
+                req.params.id
+            );
+
+        if (!visting) {
+
+            req.flash(
+                "err",
+                "This listing does not exist."
+            );
+
+            return res.redirect("/visting");
+        }
+
+        const newReview =
+            new ReviewModel(
+                req.body.review
+            );
+
+        visting.reviews.push(
+            newReview
+        );
+
+        await newReview.save();
+
+        await visting.save();
+
+        req.flash(
+            "sucess",
+            "🎉 Review Added! ✅"
+        );
+
+        res.redirect(
+            `/visting/${visting.id}`
+        );
+    })
+);
+
+
+// ==============================
+// DELETE REVIEW
+// ==============================
+
+app.delete(
+    "/visting/:id/review/:reviewId",
+    isLoggedIn,
+
+    wrapAsync(async (req, res) => {
+
+        const {
+            id,
+            reviewId
+        } = req.params;
+
+        await Visting.findByIdAndUpdate(
+            id,
+            {
+                $pull: {
+                    reviews: reviewId
+                }
+            }
+        );
+
+        await Review.findByIdAndDelete(
+            reviewId
+        );
+
+        req.flash(
+            "sucess",
+            "🎉 Review Deleted! ✅"
+        );
+
+        res.redirect(
+            `/visting/${id}`
+        );
+    })
+);
+
+
+// ==============================
+// ERROR HANDLER
+// ==============================
+
+app.use(
+    (err, req, res, next) => {
+
+        const {
+            statusCode = 500,
+            message = "Something went wrong"
+        } = err;
+
+        res.status(statusCode);
+
+        res.render(
+            "error.ejs",
+            {
+                err
+            }
+        );
     }
-
-    res.render("edit.ejs", { visting });
-});
-
-
-// UPDATE Route
-app.put("/visting/:id", async (req, res) => {
-    let { id } = req.params;
-
-    const visting = await Visting.findById(id);
-
-    if (!visting) {
-        req.flash("err", "This listing does not exist.");
-        return res.redirect("/visting");
-    }
-
-    await Visting.findByIdAndUpdate(id, { ...req.body.visting });
-
-    req.flash("sucess", "🎉 Visting Updated! ✅");
-
-    res.redirect(`/visting/${id}`);
-});
-// delete route
-app.delete("/visting/:id" , async(req,res)=>{
-    let{id} = req.params;
-    await Visting.findByIdAndDelete(id);
-    req.flash("sucess" , "🎉 Visting Deleted! ✅");
-    res.redirect("/visting");
-})
-// post route for review
-app.post("/visting/:id/review" , async(req,res) =>{
-  let visting =  await Visting.findById(req.params.id);
-  let NewReview = new Review(req.body.review);
-  visting.reviews.push(NewReview);
-  req.flash("sucess" , "🎉 Review Added! ✅");
-      await NewReview.save();
-      await visting.save();
-    
-      res.redirect(`/visting/${visting.id}`)
-
-});
-app.delete("/visting/:id/review/:reviewId" , async(req,res)=> {
-    let{id,reviewId} = req.params;
-    await Visting.findByIdAndUpdate(id , {$pull: {reviews : reviewId}});
-    req.flash("sucess" , "🎉 Review Deleted! ✅");
-    await Review.findByIdAndDelete(reviewId);
-    res.redirect(`/visting/${id}`)
-    
-})
-app.use((err, req, res, next) => {
-    const { statusCode = 500, message = "Something went wrong" } = err;
-   res.render("error.ejs" , {err});
-});
-app.get("/getcookies" , (req,res) =>{
-    res.cookie("greeting" , "hello world");
-    res.cookie("made in" , ("india"));
-    res.send("hi , cookie are set")
-});
-app.get("/" , () =>{
-    console.dir(req.cookies);
-    res.send("cookies are displayed");
-})
-// app.all("*" ,(req,res,next) => {
-//     next(newExpressError(404 , "page not found"))
-// });
+);

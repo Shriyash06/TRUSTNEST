@@ -459,3 +459,65 @@ Result:
 - `failureFlash` creates a flash message for authentication failure.
 - The success callback runs only after successful authentication.
 - `try/catch` does not replace Passport's authentication failure handling.
+## 📅 Daily Update — 26 August 2026
+
+### 🔐 Authentication & Session Implementation
+
+Today I worked on improving the authentication flow and understanding how sessions work with Passport.js.
+
+### ✅ Implemented
+
+- Implemented user login using Passport Local Strategy.
+- Implemented automatic login after user signup using `req.login()`.
+- Implemented logout using `req.logout()`.
+- Added protected routes using `req.isAuthenticated()`.
+- Created `isLoggedIn` middleware to restrict unauthenticated users.
+- Used `req.user` to access the currently authenticated user.
+- Implemented session-based authentication.
+- Implemented `req.session.redirectTo` to save the URL a user wanted to access.
+- Implemented redirecting the user back to the original URL after successful login.
+- Used `res.locals` to make flash messages and saved URLs available to EJS templates.
+- Implemented success and error flash messages.
+- Tested authentication using MongoDB Shell.
+- Debugged login, logout and protected-route behaviour.
+
+### 🧠 Concepts Learned
+
+```text
+Passport.js
+     ↓
+Session
+     ↓
+req.user
+     ↓
+req.isAuthenticated()
+     ↓
+Protected Route
+     ↓
+req.session.redirectTo
+     ↓
+Login
+     ↓
+Original URL
+🧪 Debugging Approach
+
+Followed my development rule:
+
+Think → Break → Test → Debug → Fix → Verify → Commit
+
+Instead of building everything at once, I tested authentication in small cases and fixed issues step-by-step.
+
+💡 Key Learning
+
+Today I understood the practical use of:
+
+req.login()
+req.logout()
+req.user
+req.isAuthenticated()
+req.session
+req.session.redirectTo
+res.locals
+Flash messages
+Authentication middleware
+Redirect flow after login
