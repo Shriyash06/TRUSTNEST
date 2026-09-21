@@ -1,29 +1,997 @@
 <% layout("/layouts/bolierplate.ejs") %>
-<body>
-<div class="row">
-    <div class="row col-8 offset-2" >
-    <h1> add new route</h1>
-    <form method = "post" action = "/visting/<%=visting.id%>?_method=PUT">
-        <label for="title" class = "form-label">Title:</label>
-        <input type="text" id="title"  class = "form-control"name= "visting[title]" value = "<%= visting.title%>" required><br/><br/><br/>
-        
-        <label for="description" class = "form-label">Description:</label>
-        <textarea id="description"    class = "form-control" name="visting[description]" row = "10" col = "10"  value = "<%= visting.description%>"required></textarea><br/><br/><br/>
-          <label for="location" class = "form-label">Location:</label>
-        <input type="text" id="location"   class = "form-control" name="visting[location]"value = "<%=visting.location%>" required><br/><br/><br/>
-        <div > <label for="price" class = "form-label">Price:</label>
-        <input type="number" id="price"    class = "form-control" name="visting[price]"  value = "<%= visting.price%>"required><br/><br/><br/>
-                    
-        <label for="country" class = "form-label">Country:</label>
-        <input type="text" id="country"    class = "form-control" name="visting[country]"  value = "<%=visting.country%>"required><br/><br/><br/></div>
-       
-        <label for="image" class = "form-label">Image URL:</label>
-        <input type="text" id="image"  class = "form-control"name="visting[image]"  value = <%= visting.image.url%>><br/><br/><br/> 
-        
-        <button type="submit" class = "btn btn-dark mb-5">Create Listing</button>
-    </form>
-    
+
+<style>
+  /* ================================
+     WANDERLUST EDIT PAGE
+     ================================ */
+
+  .edit-page {
+    min-height: 100vh;
+    background:
+      radial-gradient(circle at 10% 10%, rgba(0,0,0,0.035), transparent 30%),
+      #f7f7f5;
+    padding-bottom: 80px;
+  }
+
+  .edit-wrapper {
+    max-width: 1180px;
+    margin: auto;
+  }
+
+  /* ================================
+     HEADER
+     ================================ */
+
+  .edit-header {
+    padding: 25px 0 35px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.7px;
+    text-transform: uppercase;
+    color: #555;
+    margin-bottom: 18px;
+  }
+
+  .edit-header h1 {
+    font-size: clamp(2.3rem, 5vw, 4rem);
+    font-weight: 800;
+    letter-spacing: -2.5px;
+    line-height: 1;
+    margin-bottom: 14px;
+    color: #111;
+  }
+
+  .edit-header h1 span {
+    color: #777;
+    font-weight: 500;
+  }
+
+  .edit-header p {
+    max-width: 620px;
+    color: #777;
+    font-size: 1rem;
+    line-height: 1.7;
+    margin: 0;
+  }
+
+  /* ================================
+     MAIN FORM CARD
+     ================================ */
+
+  .edit-card {
+    background: #fff;
+    border: 1px solid #e6e6e6;
+    border-radius: 28px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.07);
+  }
+
+  .form-section {
+    padding: 42px;
+  }
+
+  .section-heading {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 30px;
+  }
+
+  .section-number {
+    width: 34px;
+    height: 34px;
+    flex: 0 0 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #111;
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: 700;
+  }
+
+  .section-title {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #111;
+    margin-bottom: 4px;
+  }
+
+  .section-subtitle {
+    color: #888;
+    font-size: 0.88rem;
+    line-height: 1.5;
+  }
+
+  /* ================================
+     FORM
+     ================================ */
+
+  .form-label {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #222;
+    margin-bottom: 9px;
+  }
+
+  .required-star {
+    color: #d11;
+  }
+
+  .form-control {
+    min-height: 50px;
+    border: 1px solid #dedede;
+    border-radius: 13px;
+    padding: 13px 15px;
+    font-size: 0.95rem;
+    color: #222;
+    background: #fff;
+    transition: all 0.2s ease;
+  }
+
+  .form-control::placeholder {
+    color: #aaa;
+  }
+
+  .form-control:hover {
+    border-color: #bbb;
+  }
+
+  .form-control:focus {
+    border-color: #111;
+    box-shadow: 0 0 0 4px rgba(0,0,0,0.055);
+  }
+
+  textarea.form-control {
+    min-height: 165px;
+    resize: vertical;
+    line-height: 1.65;
+  }
+
+  .form-text {
+    color: #999;
+    font-size: 0.78rem;
+    margin-top: 8px;
+  }
+
+  /* PRICE */
+
+  .input-group {
+    border-radius: 13px;
+  }
+
+  .input-group-text {
+    min-width: 50px;
+    justify-content: center;
+    background: #f5f5f3;
+    border: 1px solid #dedede;
+    border-right: 0;
+    border-radius: 13px 0 0 13px;
+    font-weight: 800;
+    color: #222;
+  }
+
+  .input-group .form-control {
+    border-radius: 0 13px 13px 0;
+  }
+
+  /* ================================
+     IMAGE SECTION
+     ================================ */
+
+  .image-section {
+    background: #fcfcfb;
+    border-top: 1px solid #eee;
+  }
+
+  .upload-box {
+    position: relative;
+  }
+
+  .upload-box input[type="file"] {
+    cursor: pointer;
+    background: #fff;
+  }
+
+  .upload-box input[type="file"]::file-selector-button {
+    border: none;
+    background: #111;
+    color: #fff;
+    border-radius: 9px;
+    padding: 9px 13px;
+    margin-right: 12px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+  /* CURRENT IMAGE */
+
+  .current-image-box {
+    margin-top: 12px;
+    border: 1px solid #e4e4e4;
+    border-radius: 20px;
+    padding: 10px;
+    background: #fff;
+    overflow: hidden;
+  }
+
+  .current-image {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    display: block;
+    border-radius: 15px;
+    transition: transform 0.4s ease;
+  }
+
+  .current-image-box:hover .current-image {
+    transform: scale(1.015);
+  }
+
+  .image-caption {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 13px 7px 5px;
+    color: #777;
+    font-size: 0.78rem;
+  }
+
+  /* ================================
+     ACTIONS
+     ================================ */
+
+  .action-area {
+    border-top: 1px solid #eee;
+    padding: 24px 42px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #fff;
+  }
+
+  .cancel-btn {
+    color: #555;
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .cancel-btn:hover {
+    color: #000;
+  }
+
+  .save-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    background: #111;
+    color: #fff;
+    border: none;
+    border-radius: 13px;
+    padding: 14px 23px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
+
+  .save-btn:hover {
+    background: #000;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.14);
+    color: #fff;
+  }
+
+  .save-arrow {
+    font-size: 1.1rem;
+    transition: transform 0.2s ease;
+  }
+
+  .save-btn:hover .save-arrow {
+    transform: translateX(4px);
+  }
+
+  /* ================================
+     RIGHT SIDE TRAVEL CARD
+     ================================ */
+
+  .tips-card {
+    position: sticky;
+    top: 25px;
+    background: #111;
+    color: #fff;
+    border-radius: 25px;
+    overflow: hidden;
+    box-shadow: 0 18px 45px rgba(0,0,0,0.14);
+  }
+
+  .tips-image {
+    height: 180px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .tips-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: grayscale(15%);
+    transition: transform 0.5s ease;
+  }
+
+  .tips-card:hover .tips-image img {
+    transform: scale(1.05);
+  }
+
+  .tips-image::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to top,
+      rgba(0,0,0,0.6),
+      transparent 70%
+    );
+  }
+
+  .tips-content {
+    padding: 27px;
+  }
+
+  .tips-kicker {
+    color: #aaa;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 1.4px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .tips-content h4 {
+    font-size: 1.45rem;
+    line-height: 1.2;
+    letter-spacing: -0.6px;
+    margin-bottom: 10px;
+  }
+
+  .tips-intro {
+    color: #aaa;
+    font-size: 0.84rem;
+    line-height: 1.6;
+    margin-bottom: 25px;
+  }
+
+  .tip-item {
+    display: flex;
+    gap: 13px;
+    padding: 15px 0;
+    border-top: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .tip-icon {
+    width: 31px;
+    height: 31px;
+    flex: 0 0 31px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9px;
+    background: rgba(255,255,255,0.09);
+    font-size: 15px;
+  }
+
+  .tip-item strong {
+    display: block;
+    font-size: 0.84rem;
+    margin-bottom: 3px;
+  }
+
+  .tip-item span {
+    display: block;
+    color: #999;
+    font-size: 0.76rem;
+    line-height: 1.5;
+  }
+
+  .travel-quote {
+    margin-top: 23px;
+    padding: 18px;
+    border-radius: 15px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .travel-quote p {
+    margin: 0;
+    font-size: 0.84rem;
+    line-height: 1.55;
+    color: #ddd;
+    font-style: italic;
+  }
+
+  /* ================================
+     RESPONSIVE
+     ================================ */
+
+  @media (max-width: 991px) {
+    .tips-card {
+      position: static;
+    }
+  }
+
+  @media (max-width: 768px) {
+
+    .edit-page {
+      padding-bottom: 40px;
+    }
+
+    .edit-header {
+      padding: 10px 0 25px;
+    }
+
+    .edit-header h1 {
+      font-size: 2.45rem;
+      letter-spacing: -1.8px;
+    }
+
+    .edit-header p {
+      font-size: 0.92rem;
+    }
+
+    .form-section {
+      padding: 28px 20px;
+    }
+
+    .edit-card {
+      border-radius: 20px;
+    }
+
+    .section-heading {
+      margin-bottom: 25px;
+    }
+
+    .current-image {
+      height: 220px;
+    }
+
+    .action-area {
+      padding: 20px;
+    }
+
+    .save-btn {
+      padding: 13px 18px;
+    }
+
+    .tips-content {
+      padding: 23px;
+    }
+  }
+
+  @media (max-width: 480px) {
+
+    .edit-header h1 {
+      font-size: 2.1rem;
+    }
+
+    .action-area {
+      gap: 15px;
+    }
+
+    .save-btn {
+      font-size: 0.82rem;
+    }
+
+    .current-image {
+      height: 190px;
+    }
+  }
+</style>
+
+
+<div class="edit-page">
+
+  <div class="container edit-wrapper">
+
+
+    <!-- =========================================
+         HEADER
+         ========================================= -->
+
+    <div class="edit-header">
+
+      <div class="eyebrow">
+        ✦ Your Wanderlust space
+      </div>
+
+      <h1>
+        Refine your <span>escape.</span>
+      </h1>
+
+      <p>
+        Small changes can make a stay feel completely different.
+        Keep your place fresh, inviting and ready for the next traveler.
+      </p>
+
+    </div>
+
+
+    <div class="row g-4 align-items-start">
+
+
+      <!-- =========================================
+           MAIN FORM
+           ========================================= -->
+
+      <div class="col-lg-8">
+
+        <div class="edit-card">
+
+          <form
+            method="post"
+            action="/visting/<%= visting.id %>?_method=PUT"
+            novalidate
+            class="needs-validation"
+            enctype="multipart/form-data"
+          >
+
+
+            <!-- =====================================
+                 LISTING DETAILS
+                 ===================================== -->
+
+            <div class="form-section">
+
+              <div class="section-heading">
+
+                <div class="section-number">
+                  01
+                </div>
+
+                <div>
+
+                  <div class="section-title">
+                    Shape your listing
+                  </div>
+
+                  <div class="section-subtitle">
+                    Update the details travelers see before choosing your place.
+                  </div>
+
+                </div>
+
+              </div>
+
+
+              <!-- TITLE -->
+
+              <div class="mb-4">
+
+                <label
+                  for="title"
+                  class="form-label"
+                >
+                  Listing title <span class="required-star">*</span>
+                </label>
+
+                <input
+                  type="text"
+                  id="title"
+                  name="visting[title]"
+                  value="<%= visting.title %>"
+                  placeholder="A beautiful escape in the city"
+                  class="form-control"
+                  required
+                >
+
+                <div class="invalid-feedback">
+                  Please enter a valid title.
+                </div>
+
+              </div>
+
+
+              <!-- DESCRIPTION -->
+
+              <div class="mb-4">
+
+                <label
+                  for="description"
+                  class="form-label"
+                >
+                  Tell the story <span class="required-star">*</span>
+                </label>
+
+                <textarea
+                  id="description"
+                  name="visting[description]"
+                  class="form-control"
+                  placeholder="What makes this place worth remembering?"
+                  required
+                ><%= visting.description %></textarea>
+
+                <div class="invalid-feedback">
+                  Please enter a valid description.
+                </div>
+
+              </div>
+
+
+              <!-- LOCATION -->
+
+              <div class="mb-4">
+
+                <label
+                  for="location"
+                  class="form-label"
+                >
+                  Where is it? <span class="required-star">*</span>
+                </label>
+
+                <input
+                  type="text"
+                  id="location"
+                  name="visting[location]"
+                  value="<%= visting.location %>"
+                  placeholder="Agra, Uttar Pradesh"
+                  class="form-control"
+                  required
+                >
+
+                <div class="invalid-feedback">
+                  Please enter a valid location.
+                </div>
+
+              </div>
+
+
+              <!-- PRICE + COUNTRY -->
+
+              <div class="row">
+
+                <div class="col-md-5 mb-4">
+
+                  <label
+                    for="price"
+                    class="form-label"
+                  >
+                    Price per night <span class="required-star">*</span>
+                  </label>
+
+                  <div class="input-group">
+
+                    <span class="input-group-text">
+                      ₹
+                    </span>
+
+                    <input
+                      type="number"
+                      id="price"
+                      name="visting[price]"
+                      value="<%= visting.price %>"
+                      min="1"
+                      class="form-control"
+                      required
+                    >
+
+                  </div>
+
+                  <div class="form-text">
+                    Set your current nightly rate.
+                  </div>
+
+                  <div class="invalid-feedback">
+                    Please enter a valid price.
+                  </div>
+
+                </div>
+
+
+                <div class="col-md-7 mb-4">
+
+                  <label
+                    for="country"
+                    class="form-label"
+                  >
+                    Country <span class="required-star">*</span>
+                  </label>
+
+                  <input
+                    type="text"
+                    id="country"
+                    name="visting[country]"
+                    value="<%= visting.country %>"
+                    placeholder="India"
+                    class="form-control"
+                    required
+                  >
+
+                  <div class="invalid-feedback">
+                    Please enter a valid country.
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <!-- =====================================
+                 PHOTO
+                 ===================================== -->
+
+            <div class="form-section image-section">
+
+              <div class="section-heading">
+
+                <div class="section-number">
+                  02
+                </div>
+
+                <div>
+
+                  <div class="section-title">
+                    Refresh the view
+                  </div>
+
+                  <div class="section-subtitle">
+                    Keep your listing photo inspiring and up to date.
+                  </div>
+
+                </div>
+
+              </div>
+
+
+              <!-- IMAGE UPLOAD -->
+
+              <div class="mb-4 upload-box">
+
+                <label
+                  for="image"
+                  class="form-label"
+                >
+                  Upload a new photo
+                </label>
+
+                <input
+                  type="file"
+                  id="image"
+                  name="visting[image]"
+                  class="form-control"
+                >
+
+                <div class="form-text">
+                  Choose a clear, high-quality image. Leave this empty if
+                  you want to keep your current photo.
+                </div>
+
+              </div>
+
+
+              <!-- CURRENT IMAGE -->
+
+              <div>
+
+                <label class="form-label">
+                  Current cover photo
+                </label>
+
+                <div class="current-image-box">
+
+                  <img
+                    src="<%= visting.image.url %>"
+                    alt="<%= visting.title %>"
+                    class="current-image"
+                  >
+
+                  <div class="image-caption">
+                    <span>◉</span>
+                    Currently displayed on your listing
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <!-- =====================================
+                 ACTIONS
+                 ===================================== -->
+
+            <div class="action-area">
+
+              <a
+                href="/visting/<%= visting.id %>"
+                class="cancel-btn"
+              >
+                ← Back to listing
+              </a>
+
+              <button
+                type="submit"
+                class="save-btn"
+              >
+                Save changes
+                <span class="save-arrow">→</span>
+              </button>
+
+            </div>
+
+
+          </form>
+
+        </div>
+
+      </div>
+
+
+      <!-- =========================================
+           TRAVEL TIPS
+           ========================================= -->
+
+      <div class="col-lg-4">
+
+        <div class="tips-card">
+
+
+          <!-- IMAGE -->
+
+          <div class="tips-image">
+
+            <img
+              src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1000&q=85"
+              alt="Beautiful travel destination"
+            >
+
+          </div>
+
+
+          <div class="tips-content">
+
+            <div class="tips-kicker">
+              Traveler's note
+            </div>
+
+            <h4>
+              Make them want to stay.
+            </h4>
+
+            <p class="tips-intro">
+              A great listing isn't only about information.
+              It's about giving someone a reason to imagine themselves there.
+            </p>
+
+
+            <!-- TIP 1 -->
+
+            <div class="tip-item">
+
+              <div class="tip-icon">
+                ✦
+              </div>
+
+              <div>
+
+                <strong>
+                  Keep the title memorable
+                </strong>
+
+                <span>
+                  Short, specific titles are easier to notice and remember.
+                </span>
+
+              </div>
+
+            </div>
+
+
+            <!-- TIP 2 -->
+
+            <div class="tip-item">
+
+              <div class="tip-icon">
+                ↗
+              </div>
+
+              <div>
+
+                <strong>
+                  Tell the experience
+                </strong>
+
+                <span>
+                  Don't just describe the room. Tell travelers what makes
+                  staying here special.
+                </span>
+
+              </div>
+
+            </div>
+
+
+            <!-- TIP 3 -->
+
+            <div class="tip-item">
+
+              <div class="tip-icon">
+                ◉
+              </div>
+
+              <div>
+
+                <strong>
+                  Let the photo speak
+                </strong>
+
+                <span>
+                  Use a bright, sharp photo that immediately shows the
+                  character of your place.
+                </span>
+
+              </div>
+
+            </div>
+
+
+            <!-- TIP 4 -->
+
+            <div class="tip-item">
+
+              <div class="tip-icon">
+                ₹
+              </div>
+
+              <div>
+
+                <strong>
+                  Keep pricing clear
+                </strong>
+
+                <span>
+                  Make sure your nightly rate reflects the stay you're offering.
+                </span>
+
+              </div>
+
+            </div>
+
+
+            <!-- QUOTE -->
+
+            <div class="travel-quote">
+
+              <p>
+                “The best stays aren't just places you visit —
+                they're stories you take home.”
+              </p>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+    </div>
+
+  </div>
 
 </div>
-</div>
-</body>

@@ -17,8 +17,16 @@ async function main() {
 
 // Initialize data
 const initDb = async () => {
-  await Visting.deleteMany({});
-  await Visting.insertMany(initData.data); // Using renamed `initDataFile`
-  console.log("Data initialized successfully");
+    await Visting.deleteMany({});
+
+    initData.data = initData.data.map((obj) => ({
+        ...obj,
+        owner: "6a88605fa7a3fedc03c152d9"
+    }));
+
+    await Visting.insertMany(initData.data);
+
+    console.log("Data initialized successfully");
 };
+
 initDb();

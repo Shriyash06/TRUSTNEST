@@ -1,3 +1,9 @@
+if(process.env.NODE_ENV !== "production"){
+    require('dotenv').config()
+}
+// console.log( process.env.CLOUD_NAME);
+// console.log(process.env.CLOUD_API_KEY);
+// console.log(process.env.CLOUD_API_SECRET);
 const express = require("express");
 const app = express();
 const port = 8080;
@@ -15,6 +21,7 @@ const ExpressError = require("./utils/ExpressError.js");
 
 const cookieParser = require("cookie-parser");
 const expressSession = require("express-session");
+const { MongoStore } = require('connect-mongo');
 const flash = require("express-flash");
 
 const passport = require("passport");
@@ -23,14 +30,54 @@ const passportLocalMongoose =
     require("passport-local-mongoose").default;
 
 const ReviewModel = Review;
+const {storage} = require("./CloudConfig.js");
+const multer  = require('multer')
+const upload = multer({storage});
+const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
+const mapToken = process.env.MAP_TOKEN;
+const geocodingClient = mbxGeocoding({ accessToken: mapToken }); 
+
+// ==============================
+// DATABASE
+// ==============================
+
+const mongoose = require("mongoose");
+
+const dbUrl = process.env.ATLAS_DB;
+
+main()
+    .then(() => {
+        console.log("connected to database successfully");
+    })
+    .catch((err) => console.log(err));
+
+async function main() {
+    await mongoose.connect(dbUrl);
+}
+
+
 
 
 // ==============================
 // SESSION CONFIGURATION
 // ==============================
 
+
+
+const store = MongoStore.create({
+    mongoUrl: dbUrl,
+    crypto :{
+        secret : process.env.SECRET,
+    },
+    touchAfter: 24 *3600
+});
+store.on("error" , ()=>{
+    console.log("session store error" , err);
+})
+
 const sessionOption = {
-    secret: "this is a secretcode",
+    store,
+    secret: process.env.SECRET,
     resave: false,
     saveUninitialized: true,
     cookie: {
@@ -107,23 +154,6 @@ app.listen(port, () => {
 });
 
 
-// ==============================
-// DATABASE
-// ==============================
-
-const mongoose = require("mongoose");
-
-main()
-    .then(() => {
-        console.log("connected to database successfully");
-    })
-    .catch((err) => console.log(err));
-
-async function main() {
-    await mongoose.connect(
-        "mongodb://127.0.0.1:27017/banderlust"
-    );
-}
 
 
 // ==============================
@@ -158,12 +188,49 @@ const isLoggedIn = (req, res, next) => {
 
     next();
 };
+// ==============================
+// AUTHORISATION MIDDLEWARE
+// ==============================
+const isOwner = async (req,res,next)=>{
+       const { id } = req.params;
+
+        const visting = await Visting.findById(id);
+        if (!visting.owner.equals(res.locals.currentUser._id)) {
+            req.flash(
+                "error",
+                "Sorry, you don't have permission to access this listing."
+            );
+
+            return res.redirect(`/visting/${id}`);
+        }
+        next();
+
+        
+
+}
+           const isReviewOwner = async (req, res, next) => {
+    let { id, reviewId } = req.params;
+
+    const review = await Review.findById(reviewId);
+
+    if (!review.author.equals(res.locals.currentUser._id)) {
+        req.flash(
+            "error",
+            "Sorry, you don't have permission to delete this review"
+        );
+
+        return res.redirect(`/visting/${id}`);
+    }
+
+    next();
+};
 const SavedUrl = (req,res,next)=>{
    if(req.session.redirectTo){
     res.locals.redirectTo = req.session.redirectTo;
    }
    next();
 }
+
 
 
 
@@ -321,10 +388,19 @@ app.get(
     "/visting/new",
     isLoggedIn,
     (req, res) => {
+         upload.single("visting[image]"),
 
         res.render("new.ejs");
     }
 );
+// app.post(
+//   "/visting",
+//   isLoggedIn,
+//   upload.single("visting[image]"),
+//   (req, res) => {
+//     res.send(req.file);
+//   }
+// );
 
 
 // ==============================
@@ -334,19 +410,51 @@ app.get(
 app.post(
     "/visting",
     isLoggedIn,
+    upload.single("visting[image]"),
 
     wrapAsync(async (req, res) => {
 
-        const newVisting =
-            new Visting(req.body.visting);
+        // Mapbox se location ke coordinates lena
+        const response = await geocodingClient
+            .forwardGeocode({
+                query: req.body.visting.location,
+                limit: 1
+            })
+            .send();
+            // console.log(response.body.features[0].geometry.coordinates);
+            // res.send("done")
 
-        await newVisting.save();
+        // Cloudinary image details
+        const url = req.file.path;
+        const filename = req.file.filename;
 
+        // New listing create
+        const newVisting = new Visting(req.body.visting);
+
+        // Owner
+        newVisting.owner = req.user._id;
+
+        // Image
+        newVisting.image = {
+            url: url,
+            filename: filename
+        };
+
+        // Mapbox geometry
+        newVisting.geometry = response.body.features[0].geometry;
+
+        // Database mein save
+        const savedVisting = await newVisting.save();
+
+        console.log(savedVisting);
+
+        // Flash message
         req.flash(
             "sucess",
             "🎉 New Visting Added! ✅"
         );
 
+        // Redirect
         res.redirect("/visting");
     })
 );
@@ -366,7 +474,9 @@ app.get(
         const visting =
             await Visting
                 .findById(id)
-                .populate("reviews");
+                .populate({path : "reviews",
+                    populate : "author",
+                }).populate("owner");
 
         if (!visting) {
 
@@ -377,6 +487,7 @@ app.get(
 
             return res.redirect("/visting");
         }
+        console.log(visting);
 
         res.render(
             "show.ejs",
@@ -430,16 +541,24 @@ app.get(
 app.put(
     "/visting/:id",
     isLoggedIn,
+    isOwner,
+    upload.single("visting[image]"),
 
     wrapAsync(async (req, res) => {
 
         const { id } = req.params;
 
-        const visting =
-            await Visting.findById(id);
+        // Update listing
+        let visting = await Visting.findByIdAndUpdate(
+            id,
+            {
+                ...req.body.visting
+            },
+            { new: true }
+        );
 
+        // Listing doesn't exist
         if (!visting) {
-
             req.flash(
                 "err",
                 "This listing does not exist."
@@ -448,22 +567,27 @@ app.put(
             return res.redirect("/visting");
         }
 
-        await Visting.findByIdAndUpdate(
-            id,
-            {
-                ...req.body.visting
-            }
-        );
+        // If new image uploaded
+        if (req.file) {
+            const url = req.file.path;
+            const filename = req.file.filename;
+
+            visting.image = {
+                url,
+                filename
+            };
+        }
+
+        await visting.save();
 
         req.flash(
             "sucess",
-            "🎉 Visting Updated! ✅"
+            "🎉 Visiting Updated! ✅"
         );
 
         res.redirect(`/visting/${id}`);
     })
 );
-
 
 // ==============================
 // DELETE LISTING
@@ -472,12 +596,14 @@ app.put(
 app.delete(
     "/visting/:id",
     isLoggedIn,
+    isOwner ,
 
     wrapAsync(async (req, res) => {
 
         const { id } = req.params;
 
         await Visting.findByIdAndDelete(id);
+        
 
         req.flash(
             "sucess",
@@ -496,6 +622,7 @@ app.delete(
 app.post(
     "/visting/:id/review",
     isLoggedIn,
+
 
     wrapAsync(async (req, res) => {
 
@@ -518,11 +645,14 @@ app.post(
             new ReviewModel(
                 req.body.review
             );
+             newReview.author = req.user._id
+            //  console.log(newReview);
+
 
         visting.reviews.push(
             newReview
         );
-
+       
         await newReview.save();
 
         await visting.save();
@@ -546,6 +676,9 @@ app.post(
 app.delete(
     "/visting/:id/review/:reviewId",
     isLoggedIn,
+    isReviewOwner,
+
+    
 
     wrapAsync(async (req, res) => {
 

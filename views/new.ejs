@@ -1,59 +1,1122 @@
 <% layout("/layouts/bolierplate.ejs") %>
 
-<body>
-  <div class="row">
-    <div class="col-8 offset-2">
-      <h1>Add New Route</h1>
+<style>
+  /* =========================================================
+     WANDERLUST — CREATE LISTING
+  ========================================================= */
 
-      <form method="post" action="/visting" novalidate class="needs-validation">
+  .listing-page {
+    min-height: 100vh;
+    background: #f7f7f5;
+    padding-bottom: 80px;
+  }
 
-        <!-- Title -->
-        <div class="mb-3">
-          <label for="title" class="form-label">Title:</label>
-          <input type="text" id="title" placeholder="Enter your title" name="visting[title]" class="form-control" required>
-          <div class="valid-feedback">Title is valid.</div>
-          <div class="invalid-feedback">Please enter a valid title.</div>
-        </div>
+  .listing-wrapper {
+    max-width: 1120px;
+    margin: 0 auto;
+  }
 
-        <!-- Description -->
-        <div class="mb-3">
-          <label for="description" class="form-label">Description:</label>
-          <textarea id="description" placeholder="Enter your description" name="visting[description]" rows="4" cols="10" class="form-control" required></textarea>
-          <div class="invalid-feedback">Please enter a valid description.</div>
-        </div>
 
-        <!-- Location -->
-        <div class="mb-3">
-          <label for="location" class="form-label">Location:</label>
-          <input type="text" id="location" placeholder="AGRA, JAIPUR, DELHI" name="visting[location]" class="form-control" required>
-          <div class="invalid-feedback">Please enter a valid location.</div>
-        </div>
+  /* =========================================================
+     HEADER
+  ========================================================= */
 
-        <!-- Price and Country Row -->
-        <div class="row">
-          <div class="mb-3 col-4">
-            <label for="price" class="form-label">Price:</label>
-            <input type="number" id="price" placeholder="Enter your price" name="visting[price]" class="form-control" required>
-            <div class="invalid-feedback">Please enter a valid price.</div>
-          </div>
+  .listing-header {
+    padding: 20px 0 30px;
+  }
 
-          <div class="mb-3 col-8">
-            <label for="country" class="form-label">Country:</label>
-            <input type="text" id="country" placeholder="INDIA" name="visting[country]" class="form-control" required>
-            <div class="invalid-feedback">Please enter a valid country.</div>
-          </div>
-        </div>
+  .listing-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
 
-        <!-- Image URL -->
-        <div class="mb-3">
-          <label for="image" class="form-label">Image URL:</label>
-          <input type="text" id="image" placeholder="Enter your image link" name="visting[image]" class="form-control">
-        </div>
+    padding: 8px 14px;
 
-        <!-- Submit Button -->
-        <button type="submit" class="btn btn-dark mb-5 add-btn">Create Listing</button>
+    border: 1px solid #e5e5e5;
+    border-radius: 999px;
 
-      </form>
+    background: #fff;
+    color: #555;
+
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .3px;
+  }
+
+  .listing-header h1 {
+    margin-top: 18px;
+    margin-bottom: 9px;
+
+    color: #151515;
+
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 800;
+    letter-spacing: -1.8px;
+  }
+
+  .listing-header p {
+    max-width: 620px;
+
+    color: #777;
+
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+
+
+  /* =========================================================
+     MAIN CARD
+  ========================================================= */
+
+  .listing-card {
+    overflow: hidden;
+
+    background: #fff;
+
+    border: 1px solid #e7e7e7;
+    border-radius: 24px;
+
+    box-shadow:
+      0 18px 50px rgba(0, 0, 0, .06);
+  }
+
+  .form-section {
+    padding: 38px;
+  }
+
+  .section-title {
+    margin-bottom: 6px;
+
+    color: #181818;
+
+    font-size: 1.18rem;
+    font-weight: 750;
+    letter-spacing: -.3px;
+  }
+
+  .section-subtitle {
+    margin-bottom: 27px;
+
+    color: #858585;
+
+    font-size: .88rem;
+    line-height: 1.5;
+  }
+
+
+  /* =========================================================
+     FORM
+  ========================================================= */
+
+  .form-label {
+    margin-bottom: 8px;
+
+    color: #292929;
+
+    font-size: .9rem;
+    font-weight: 650;
+  }
+
+  .required-star {
+    color: #c33;
+  }
+
+  .form-control {
+    min-height: 49px;
+
+    padding: 12px 15px;
+
+    border: 1px solid #dedede;
+    border-radius: 13px;
+
+    background: #fff;
+
+    color: #222;
+
+    font-size: .92rem;
+
+    transition:
+      border-color .2s ease,
+      box-shadow .2s ease;
+  }
+
+  .form-control::placeholder {
+    color: #aaa;
+  }
+
+  .form-control:hover {
+    border-color: #cfcfcf;
+  }
+
+  .form-control:focus {
+    border-color: #222;
+
+    box-shadow:
+      0 0 0 4px rgba(0, 0, 0, .055);
+
+    outline: none;
+  }
+
+  textarea.form-control {
+    min-height: 150px;
+
+    resize: vertical;
+
+    line-height: 1.6;
+  }
+
+  .form-text {
+    margin-top: 7px;
+
+    color: #999;
+
+    font-size: .76rem;
+  }
+
+
+  /* =========================================================
+     PRICE
+  ========================================================= */
+
+  .input-group {
+    flex-wrap: nowrap;
+  }
+
+  .input-group .input-group-text {
+    min-height: 49px;
+
+    padding: 0 16px;
+
+    border: 1px solid #dedede;
+    border-right: 0;
+
+    border-radius: 13px 0 0 13px;
+
+    background: #f7f7f7;
+
+    color: #333;
+
+    font-size: 1rem;
+    font-weight: 750;
+  }
+
+  .input-group .form-control {
+    border-radius: 0 13px 13px 0;
+  }
+
+
+  /* =========================================================
+     IMAGE UPLOAD
+  ========================================================= */
+
+  .upload-box {
+    position: relative;
+
+    padding: 32px 22px;
+
+    text-align: center;
+
+    border: 1.5px dashed #d5d5d5;
+    border-radius: 18px;
+
+    background:
+      linear-gradient(
+        135deg,
+        #fafafa,
+        #f6f6f6
+      );
+
+    transition:
+      border-color .25s ease,
+      background .25s ease,
+      transform .25s ease;
+  }
+
+  .upload-box:hover {
+    border-color: #222;
+
+    background: #fafafa;
+
+    transform: translateY(-2px);
+  }
+
+  .upload-icon {
+    width: 58px;
+    height: 58px;
+
+    margin: 0 auto 15px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 17px;
+
+    background: #fff;
+
+    box-shadow:
+      0 8px 22px rgba(0, 0, 0, .08);
+
+    font-size: 25px;
+  }
+
+  .upload-box h6 {
+    color: #222;
+  }
+
+  .upload-box p {
+    max-width: 330px;
+
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .upload-box .form-control {
+    max-width: 430px;
+
+    margin: 10px auto 0;
+
+    padding: 8px;
+
+    border: 0;
+
+    background: transparent;
+  }
+
+  .upload-box .form-control:focus {
+    box-shadow: none;
+  }
+
+
+  /* =========================================================
+     INSPIRATION CARD
+  ========================================================= */
+
+  .inspiration-card {
+    position: sticky;
+    top: 90px;
+
+    overflow: hidden;
+
+    background: #171717;
+
+    border-radius: 24px;
+
+    box-shadow:
+      0 20px 55px rgba(0, 0, 0, .12);
+  }
+
+
+  /* IMAGE */
+
+  .inspiration-image {
+    position: relative;
+
+    height: 310px;
+
+    overflow: hidden;
+  }
+
+  .inspiration-image img {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+
+    transition: transform .7s ease;
+  }
+
+  .inspiration-card:hover
+  .inspiration-image img {
+    transform: scale(1.06);
+  }
+
+
+  /* IMAGE OVERLAY */
+
+  .inspiration-overlay {
+    position: absolute;
+
+    inset: 0;
+
+    background:
+      linear-gradient(
+        to bottom,
+        rgba(0,0,0,.05),
+        rgba(0,0,0,.58)
+      );
+  }
+
+
+  /* BRAND LABEL */
+
+  .inspiration-label {
+    position: absolute;
+
+    left: 20px;
+    bottom: 18px;
+
+    padding: 7px 12px;
+
+    border: 1px solid rgba(255,255,255,.3);
+
+    border-radius: 999px;
+
+    background: rgba(0,0,0,.25);
+
+    backdrop-filter: blur(8px);
+
+    color: #fff;
+
+    font-size: 9px;
+    font-weight: 700;
+
+    letter-spacing: 2px;
+  }
+
+
+  /* CONTENT */
+
+  .inspiration-content {
+    position: relative;
+
+    padding: 30px 27px 32px;
+
+    color: #fff;
+  }
+
+  .quote-mark {
+    position: absolute;
+
+    right: 25px;
+    top: 18px;
+
+    color: rgba(255,255,255,.08);
+
+    font-family: Georgia, serif;
+
+    font-size: 90px;
+
+    line-height: 1;
+  }
+
+  .inspiration-content h3 {
+    position: relative;
+
+    max-width: 280px;
+
+    margin: 0 0 8px;
+
+    color: #fff;
+
+    font-size: 1.55rem;
+
+    line-height: 1.25;
+
+    font-weight: 650;
+
+    letter-spacing: -.7px;
+  }
+
+  .inspiration-content p {
+    max-width: 270px;
+
+    margin: 0;
+
+    color: #b5b5b5;
+
+    font-family: Georgia, serif;
+
+    font-size: 1.05rem;
+
+    font-style: italic;
+
+    line-height: 1.5;
+  }
+
+  .inspiration-line {
+    width: 45px;
+    height: 2px;
+
+    margin: 24px 0 13px;
+
+    background: #fff;
+
+    opacity: .7;
+  }
+
+  .inspiration-small {
+    color: #777;
+
+    font-size: .72rem;
+
+    letter-spacing: .5px;
+  }
+
+
+  /* =========================================================
+     ACTION AREA
+  ========================================================= */
+
+  .action-area {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 22px 38px;
+
+    border-top: 1px solid #ededed;
+
+    background: #fff;
+  }
+
+  .cancel-btn {
+    color: #555;
+
+    font-size: .88rem;
+    font-weight: 650;
+
+    text-decoration: none;
+
+    transition: color .2s ease;
+  }
+
+  .cancel-btn:hover {
+    color: #000;
+
+    text-decoration: underline;
+
+    text-underline-offset: 4px;
+  }
+
+  .create-btn {
+    padding: 13px 23px;
+
+    border: 0;
+    border-radius: 12px;
+
+    background: #181818;
+
+    color: #fff;
+
+    font-size: .88rem;
+    font-weight: 700;
+
+    box-shadow:
+      0 8px 20px rgba(0, 0, 0, .12);
+
+    transition:
+      background .2s ease,
+      transform .2s ease,
+      box-shadow .2s ease;
+  }
+
+  .create-btn:hover {
+    background: #000;
+
+    color: #fff;
+
+    transform: translateY(-2px);
+
+    box-shadow:
+      0 12px 25px rgba(0, 0, 0, .16);
+  }
+
+  .create-btn:active {
+    transform: translateY(0);
+  }
+
+
+  /* =========================================================
+     VALIDATION
+  ========================================================= */
+
+  .invalid-feedback,
+  .valid-feedback {
+    font-size: .76rem;
+  }
+
+
+  /* =========================================================
+     RESPONSIVE
+  ========================================================= */
+
+  @media (max-width: 991px) {
+
+    .listing-wrapper {
+      max-width: 850px;
+    }
+
+    .inspiration-card {
+      position: static;
+
+      margin-top: 5px;
+    }
+
+    .inspiration-image {
+      height: 280px;
+    }
+  }
+
+
+  @media (max-width: 768px) {
+
+    .listing-page {
+      padding-bottom: 50px;
+    }
+
+    .listing-header {
+      padding-top: 5px;
+    }
+
+    .listing-header h1 {
+      letter-spacing: -1px;
+    }
+
+    .form-section {
+      padding: 27px 21px;
+    }
+
+    .action-area {
+      padding: 19px 21px;
+    }
+  }
+
+
+  @media (max-width: 480px) {
+
+    .listing-page {
+      padding-top: 25px !important;
+    }
+
+    .listing-header h1 {
+      font-size: 1.9rem;
+    }
+
+    .listing-header p {
+      font-size: .9rem;
+    }
+
+    .listing-card {
+      border-radius: 19px;
+    }
+
+    .form-section {
+      padding: 23px 17px;
+    }
+
+    .action-area {
+      padding: 17px;
+
+      gap: 15px;
+    }
+
+    .create-btn {
+      padding: 12px 17px;
+    }
+
+    .upload-box {
+      padding: 26px 14px;
+    }
+
+    .inspiration-card {
+      border-radius: 19px;
+    }
+
+    .inspiration-image {
+      height: 230px;
+    }
+
+    .inspiration-content {
+      padding: 26px 22px 28px;
+    }
+
+    .inspiration-content h3 {
+      font-size: 1.35rem;
+    }
+  }
+</style>
+
+
+<div class="listing-page py-5">
+
+  <div class="container listing-wrapper">
+
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <div class="listing-header">
+
+      <span class="listing-badge">
+
+        ✨
+
+        Become a host
+
+      </span>
+
+
+      <h1>
+        Create your listing
+      </h1>
+
+
+      <p class="mb-0">
+        Share your place with travelers and create
+        an unforgettable stay.
+      </p>
+
     </div>
+
+
+
+    <div class="row g-4">
+
+
+      <!-- ===================================================
+           MAIN FORM
+      ==================================================== -->
+
+      <div class="col-lg-8">
+
+        <div class="listing-card">
+
+
+          <form
+            method="post"
+            action="/visting"
+            novalidate
+            class="needs-validation"
+            enctype="multipart/form-data"
+          >
+
+
+            <!-- =============================================
+                 BASIC INFORMATION
+            ============================================== -->
+
+            <div class="form-section">
+
+              <div class="section-title">
+                Tell us about your place
+              </div>
+
+
+              <div class="section-subtitle">
+                Start with some basic information about your listing.
+              </div>
+
+
+
+              <!-- TITLE -->
+
+              <div class="mb-4">
+
+                <label
+                  for="title"
+                  class="form-label"
+                >
+
+                  Listing title
+
+                  <span class="required-star">
+                    *
+                  </span>
+
+                </label>
+
+
+                <input
+                  type="text"
+                  id="title"
+                  name="visting[title]"
+                  placeholder="Beautiful beach house with ocean view"
+                  class="form-control"
+                  required
+                >
+
+
+                <div class="valid-feedback">
+                  Looks good!
+                </div>
+
+
+                <div class="invalid-feedback">
+                  Please enter a title for your listing.
+                </div>
+
+              </div>
+
+
+
+              <!-- DESCRIPTION -->
+
+              <div class="mb-4">
+
+                <label
+                  for="description"
+                  class="form-label"
+                >
+
+                  Description
+
+                  <span class="required-star">
+                    *
+                  </span>
+
+                </label>
+
+
+                <textarea
+                  id="description"
+                  name="visting[description]"
+                  placeholder="Tell guests what makes your place special..."
+                  class="form-control"
+                  required
+                ></textarea>
+
+
+                <div class="invalid-feedback">
+                  Please enter a description.
+                </div>
+
+              </div>
+
+
+
+              <!-- LOCATION -->
+
+              <div class="mb-4">
+
+                <label
+                  for="location"
+                  class="form-label"
+                >
+
+                  Location
+
+                  <span class="required-star">
+                    *
+                  </span>
+
+                </label>
+
+
+                <input
+                  type="text"
+                  id="location"
+                  name="visting[location]"
+                  placeholder="Agra, Uttar Pradesh"
+                  class="form-control"
+                  required
+                >
+
+
+                <div class="invalid-feedback">
+                  Please enter a valid location.
+                </div>
+
+              </div>
+
+
+
+              <!-- PRICE + COUNTRY -->
+
+              <div class="row">
+
+
+                <!-- PRICE -->
+
+                <div class="col-md-5 mb-4">
+
+                  <label
+                    for="price"
+                    class="form-label"
+                  >
+
+                    Price per night
+
+                    <span class="required-star">
+                      *
+                    </span>
+
+                  </label>
+
+
+                  <div class="input-group">
+
+                    <span class="input-group-text">
+                      ₹
+                    </span>
+
+
+                    <input
+                      type="number"
+                      id="price"
+                      name="visting[price]"
+                      placeholder="1200"
+                      min="1"
+                      class="form-control"
+                      required
+                    >
+
+                  </div>
+
+
+                  <div class="form-text">
+                    Set a competitive nightly price.
+                  </div>
+
+
+                  <div class="invalid-feedback">
+                    Please enter a valid price.
+                  </div>
+
+                </div>
+
+
+
+                <!-- COUNTRY -->
+
+                <div class="col-md-7 mb-4">
+
+                  <label
+                    for="country"
+                    class="form-label"
+                  >
+
+                    Country
+
+                    <span class="required-star">
+                      *
+                    </span>
+
+                  </label>
+
+
+                  <input
+                    type="text"
+                    id="country"
+                    name="visting[country]"
+                    placeholder="India"
+                    class="form-control"
+                    required
+                  >
+
+
+                  <div class="invalid-feedback">
+                    Please enter a valid country.
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 IMAGE SECTION
+            ================================================== -->
+
+            <div class="form-section border-top">
+
+
+              <div class="section-title">
+                Make your listing stand out
+              </div>
+
+
+              <div class="section-subtitle">
+                Add a beautiful photo so guests can discover your place.
+              </div>
+
+
+
+              <!-- IMAGE URL REMOVED -->
+
+              <!--
+              <div class="mb-4">
+
+                <label
+                  for="imageUrl"
+                  class="form-label"
+                >
+                  Image URL
+                </label>
+
+                <input
+                  type="text"
+                  id="imageUrl"
+                  name="visting[image]"
+                  placeholder="https://example.com/beautiful-place.jpg"
+                  class="form-control"
+                >
+
+              </div>
+              -->
+
+
+
+              <!-- UPLOAD -->
+
+              <div>
+
+                <label class="form-label">
+                  Upload an image
+                </label>
+
+
+                <div class="upload-box">
+
+
+                  <div class="upload-icon">
+                    📸
+                  </div>
+
+
+                  <h6 class="fw-bold mb-1">
+                    Choose a photo
+                  </h6>
+
+
+                  <p class="text-muted small mb-2">
+                    Upload a clear and attractive photo of your place
+                  </p>
+
+
+                  <input
+                    type="file"
+                    id="imageFile"
+                    name="visting[image]"
+                    class="form-control"
+                    accept="image/*"
+                  >
+
+                </div>
+
+
+                <div class="form-text mt-2">
+                  JPG, PNG or other supported image formats.
+                </div>
+
+              </div>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 ACTIONS
+            ================================================== -->
+
+            <div class="action-area">
+
+
+              <a
+                href="/visting"
+                class="cancel-btn"
+              >
+                Cancel
+              </a>
+
+
+              <button
+                type="submit"
+                class="create-btn"
+              >
+                Create listing →
+              </button>
+
+
+            </div>
+
+
+          </form>
+
+        </div>
+
+      </div>
+
+
+
+      <!-- ===================================================
+           INSPIRATION CARD
+      ==================================================== -->
+
+      <div class="col-lg-4">
+
+        <div class="inspiration-card">
+
+
+          <!-- IMAGE -->
+
+          <div class="inspiration-image">
+
+
+            <img
+              src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=85"
+              alt="Beautiful travel destination"
+            >
+
+
+            <div class="inspiration-overlay"></div>
+
+
+            <div class="inspiration-label">
+              WANDERLUST
+            </div>
+
+
+          </div>
+
+
+
+          <!-- THOUGHT -->
+
+          <div class="inspiration-content">
+
+
+            <div class="quote-mark">
+              “
+            </div>
+
+
+            <h3>
+              A great stay isn't
+              just a place to sleep.
+            </h3>
+
+
+            <p>
+              It's a memory waiting
+              to happen.
+            </p>
+
+
+            <div class="inspiration-line"></div>
+
+
+            <span class="inspiration-small">
+              Make your place worth remembering.
+            </span>
+
+
+          </div>
+
+
+        </div>
+
+      </div>
+
+
+    </div>
+
   </div>
-</body>
+
+</div>

@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const review = require('./review');
 const Schema = mongoose.Schema;
 const Review = require("./review.js");
+const User = require("./user.js");
 
 const vistingSchema = new Schema({
   title: {
@@ -12,21 +13,15 @@ const vistingSchema = new Schema({
     type: String,
     required: true,
   },
-  image: {
-    filename: {
-      type: String,
-       
-      set : (v) => v==="" ? "https://images.unsplash.com/photo-1682685797743-3a7b6b8d8149?q=80&w=2070&auto=format&fit=crop" :v ,
-     
-      
-    },
-    url: {
-      type: String,
-      default: "https://images.unsplash.com/photo-1682685797743-3a7b6b8d8149?q=80&w=2070&auto=format&fit=crop",
-      
-     
-    }
+  description : {
+    type: String,
+    required: true
   },
+  image: {
+    url : String,
+    filename : String,
+  },
+    
   price: {
     type: Number,
     required: true,
@@ -44,7 +39,26 @@ const vistingSchema = new Schema({
       type : Schema.Types.ObjectId,
       ref : "Review"
     }
-  ]
+  ],
+  owner :{
+    type : Schema.Types.ObjectId,
+    ref : "User"
+
+
+  },
+  geometry: {
+  type: {
+      type: String, // Don't do `{ location: { type: String } }`
+      enum: ['Point'], // 'location.type' must be 'Point'
+      required: true
+    },
+    coordinates: {
+      type: [Number],
+      required: true
+    }
+  }
+
+  
 });
 // VistingSchema.post("findOneAndDelete" , async (visting) =>{
 //   if(visting){

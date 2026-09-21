@@ -1,26 +1,1040 @@
 <% layout("/layouts/bolierplate.ejs") %>
 
+<style>
+    :root {
+        --wl-black: #171717;
+        --wl-gray: #717171;
+        --wl-light: #f7f7f5;
+        --wl-border: #e8e8e8;
+    }
 
-<h1 class="text-center my-4">TRUSTNEST.IN</h1>
+    * {
+        box-sizing: border-box;
+    }
 
-<div class="container">
-  <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2 row-cols-lg-4 g-4">
-    <% for (let visting of allvistings) { %>
-        <a href = "/visting/<%=visting.id%>" class = "link-dec" >
-<div class="col" class = "visting-card" >
-        <div class="card h-100 shadow-sm">
-          <img src="<%= visting.image.url %>" class="card-img-top" alt="listing image" style="height: 200px; object-fit: cover;">
-           <div class="card-img-overlay">yash shrivastava</div>
-          <div class="card-body">
-            <h5 class="card-title"><%= visting.title %></h5>
-            <p class="card-text">
-              &#8377; <%= visting.price %> / night
-            </p>
-          </div>
+    body {
+        margin: 0;
+        background: #fff;
+        color: var(--wl-black);
+    }
+
+    .wl-home {
+        overflow: hidden;
+    }
+
+    /* =========================
+       HERO
+    ========================= */
+
+    .wl-hero-wrap {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 18px 24px 0;
+    }
+
+    .wl-hero {
+        min-height: 590px;
+        position: relative;
+        overflow: hidden;
+        border-radius: 30px;
+
+        background-image:
+            linear-gradient(
+                90deg,
+                rgba(0,0,0,.66),
+                rgba(0,0,0,.25) 55%,
+                rgba(0,0,0,.08)
+            ),
+            url("https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=2000&q=90");
+
+        background-size: cover;
+        background-position: center;
+    }
+
+    .wl-hero-content {
+        position: absolute;
+        left: 7%;
+        top: 50%;
+        transform: translateY(-50%);
+
+        max-width: 650px;
+        color: white;
+    }
+
+    .wl-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+
+        padding: 9px 15px;
+
+        border: 1px solid rgba(255,255,255,.3);
+        background: rgba(255,255,255,.15);
+        backdrop-filter: blur(12px);
+
+        border-radius: 30px;
+
+        font-size: 13px;
+        font-weight: 600;
+
+        margin-bottom: 22px;
+    }
+
+    .wl-hero h1 {
+        margin: 0;
+
+        font-size: clamp(48px, 6vw, 78px);
+        line-height: .98;
+        letter-spacing: -4px;
+        font-weight: 750;
+    }
+
+    .wl-hero h1 span {
+        font-weight: 400;
+        font-style: italic;
+    }
+
+    .wl-hero-description {
+        max-width: 510px;
+
+        margin: 24px 0 30px;
+
+        font-size: 17px;
+        line-height: 1.6;
+
+        color: rgba(255,255,255,.9);
+    }
+
+    /* SEARCH */
+
+    .wl-search {
+        width: min(590px, 100%);
+
+        display: flex;
+        align-items: center;
+
+        padding: 7px;
+
+        background: white;
+        border-radius: 17px;
+
+        box-shadow: 0 18px 50px rgba(0,0,0,.2);
+    }
+
+    .wl-search-icon {
+        width: 50px;
+        text-align: center;
+
+        color: #444;
+        font-size: 16px;
+    }
+
+    .wl-search-text {
+        flex: 1;
+
+        color: #777;
+        font-size: 14px;
+    }
+
+    .wl-search-btn {
+        text-decoration: none;
+
+        background: #171717;
+        color: white;
+
+        padding: 15px 22px;
+
+        border-radius: 12px;
+
+        font-size: 14px;
+        font-weight: 650;
+
+        transition: .25s;
+    }
+
+    .wl-search-btn:hover {
+        color: white;
+        transform: translateY(-1px);
+    }
+
+
+    /* =========================
+       TRENDING STRIP
+    ========================= */
+
+    .wl-trending {
+        max-width: 1240px;
+        margin: 42px auto 0;
+        padding: 0 20px;
+    }
+
+    .wl-trending-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: end;
+
+        margin-bottom: 20px;
+    }
+
+    .wl-trending-title {
+        font-size: 25px;
+        font-weight: 700;
+        letter-spacing: -.6px;
+    }
+
+    .wl-trending-subtitle {
+        color: var(--wl-gray);
+        font-size: 13px;
+        margin-top: 5px;
+    }
+
+    .wl-scroll-hint {
+        color: #888;
+        font-size: 12px;
+    }
+
+    .wl-categories {
+        display: flex;
+        gap: 12px;
+
+        overflow-x: auto;
+
+        padding: 4px 2px 12px;
+
+        scrollbar-width: none;
+    }
+
+    .wl-categories::-webkit-scrollbar {
+        display: none;
+    }
+
+    .wl-category {
+        flex: 0 0 auto;
+
+        min-width: 112px;
+
+        padding: 16px 18px;
+
+        text-decoration: none;
+        color: #333;
+
+        background: var(--wl-light);
+
+        border: 1px solid transparent;
+        border-radius: 15px;
+
+        transition: .25s;
+    }
+
+    .wl-category:hover {
+        color: #111;
+        background: #fff;
+        border-color: #ddd;
+
+        transform: translateY(-3px);
+
+        box-shadow: 0 8px 25px rgba(0,0,0,.07);
+    }
+
+    .wl-category i {
+        display: block;
+
+        font-size: 20px;
+
+        margin-bottom: 11px;
+    }
+
+    .wl-category span {
+        font-size: 13px;
+        font-weight: 650;
+    }
+
+    .wl-category small {
+        display: block;
+
+        color: #888;
+
+        margin-top: 4px;
+
+        font-size: 10px;
+    }
+
+
+    /* =========================
+       FEATURED DESTINATIONS
+    ========================= */
+
+    .wl-featured {
+        max-width: 1240px;
+        margin: 62px auto 0;
+        padding: 0 20px;
+    }
+
+    .wl-section-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: end;
+
+        margin-bottom: 23px;
+    }
+
+    .wl-section-heading h2 {
+        margin: 0;
+
+        font-size: 28px;
+        letter-spacing: -1px;
+    }
+
+    .wl-section-heading p {
+        margin: 7px 0 0;
+
+        color: var(--wl-gray);
+        font-size: 14px;
+    }
+
+    .wl-view-all {
+        color: #222;
+        font-size: 13px;
+        font-weight: 650;
+        text-decoration: none;
+    }
+
+    .wl-view-all:hover {
+        text-decoration: underline;
+    }
+
+
+    /* =========================
+       LISTINGS
+    ========================= */
+
+    .wl-grid {
+        display: grid;
+
+        grid-template-columns: repeat(4, 1fr);
+
+        gap: 34px 18px;
+    }
+
+    .wl-card {
+        min-width: 0;
+    }
+
+    .wl-card-link {
+        display: block;
+
+        color: inherit;
+        text-decoration: none;
+    }
+
+    .wl-image {
+        position: relative;
+
+        width: 100%;
+        aspect-ratio: 1 / 1.05;
+
+        overflow: hidden;
+
+        border-radius: 18px;
+
+        background: #eee;
+    }
+
+    .wl-image img {
+        width: 100%;
+        height: 100%;
+
+        object-fit: cover;
+
+        display: block;
+
+        transition:
+            transform .55s cubic-bezier(.2,.8,.2,1);
+    }
+
+    .wl-card:hover .wl-image img {
+        transform: scale(1.06);
+    }
+
+
+    /* CARD BADGES */
+
+    .wl-favorite {
+        position: absolute;
+        left: 12px;
+        top: 12px;
+
+        padding: 7px 10px;
+
+        background: rgba(255,255,255,.94);
+
+        border-radius: 9px;
+
+        font-size: 10px;
+        font-weight: 700;
+
+        box-shadow: 0 3px 12px rgba(0,0,0,.08);
+    }
+
+    .wl-heart {
+        position: absolute;
+
+        right: 12px;
+        top: 12px;
+
+        width: 38px;
+        height: 38px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        border: none;
+        border-radius: 50%;
+
+        background: rgba(255,255,255,.94);
+
+        font-size: 21px;
+
+        cursor: pointer;
+
+        box-shadow: 0 3px 12px rgba(0,0,0,.08);
+
+        transition: .2s;
+    }
+
+    .wl-heart:hover {
+        transform: scale(1.1);
+    }
+
+
+    /* CARD CONTENT */
+
+    .wl-card-info {
+        padding: 13px 2px 0;
+    }
+
+    .wl-location-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        margin-bottom: 6px;
+
+        gap: 10px;
+    }
+
+    .wl-location {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+
+        color: #555;
+
+        font-size: 12px;
+        font-weight: 550;
+
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    .wl-location i {
+        font-size: 10px;
+    }
+
+    .wl-rating {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+
+        font-size: 12px;
+        font-weight: 650;
+
+        white-space: nowrap;
+    }
+
+    .wl-rating i {
+        font-size: 10px;
+    }
+
+    .wl-title {
+        margin: 0 0 7px;
+
+        font-size: 15px;
+        font-weight: 650;
+
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .wl-price {
+        color: #666;
+        font-size: 13px;
+    }
+
+    .wl-price strong {
+        color: #222;
+        font-size: 15px;
+    }
+
+
+    /* =========================
+       BOTTOM DISCOVER BANNER
+    ========================= */
+
+    .wl-bottom {
+        max-width: 1240px;
+        margin: 80px auto;
+
+        padding: 0 20px;
+    }
+
+    .wl-bottom-box {
+        min-height: 260px;
+
+        border-radius: 25px;
+
+        display: flex;
+        align-items: center;
+
+        padding: 45px;
+
+        color: white;
+
+        background:
+            linear-gradient(
+                90deg,
+                rgba(0,0,0,.78),
+                rgba(0,0,0,.25)
+            ),
+            url("https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1600&q=85");
+
+        background-size: cover;
+        background-position: center;
+    }
+
+    .wl-bottom-content {
+        max-width: 500px;
+    }
+
+    .wl-bottom-content h2 {
+        margin: 0 0 10px;
+
+        font-size: 31px;
+        letter-spacing: -1px;
+    }
+
+    .wl-bottom-content p {
+        margin: 0 0 20px;
+
+        color: rgba(255,255,255,.82);
+
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+    .wl-bottom-button {
+        display: inline-block;
+
+        padding: 12px 18px;
+
+        border-radius: 10px;
+
+        background: white;
+        color: #171717;
+
+        text-decoration: none;
+
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+
+    /* =========================
+       EMPTY
+    ========================= */
+
+    .wl-empty {
+        text-align: center;
+
+        padding: 100px 20px;
+
+        color: #666;
+    }
+
+    .wl-empty i {
+        font-size: 42px;
+        margin-bottom: 15px;
+    }
+
+
+    /* =========================
+       RESPONSIVE
+    ========================= */
+
+    @media (max-width: 1050px) {
+
+        .wl-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .wl-hero {
+            min-height: 550px;
+        }
+    }
+
+
+    @media (max-width: 760px) {
+
+        .wl-hero-wrap {
+            padding: 12px 12px 0;
+        }
+
+        .wl-hero {
+            min-height: 570px;
+            border-radius: 22px;
+
+            background-position: 62% center;
+        }
+
+        .wl-hero-content {
+            left: 28px;
+            right: 28px;
+        }
+
+        .wl-hero h1 {
+            font-size: 49px;
+            letter-spacing: -2.5px;
+        }
+
+        .wl-hero-description {
+            font-size: 15px;
+        }
+
+        .wl-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .wl-bottom-box {
+            padding: 32px;
+        }
+    }
+
+
+    @media (max-width: 500px) {
+
+        .wl-hero {
+            min-height: 600px;
+        }
+
+        .wl-hero-content {
+            left: 22px;
+            right: 22px;
+        }
+
+        .wl-hero h1 {
+            font-size: 42px;
+        }
+
+        .wl-search {
+            padding: 6px;
+        }
+
+        .wl-search-icon {
+            width: 40px;
+        }
+
+        .wl-search-btn {
+            padding: 13px 15px;
+        }
+
+        .wl-search-text {
+            font-size: 12px;
+        }
+
+        .wl-grid {
+            gap: 27px 11px;
+        }
+
+        .wl-image {
+            border-radius: 13px;
+        }
+
+        .wl-favorite {
+            display: none;
+        }
+
+        .wl-heart {
+            width: 34px;
+            height: 34px;
+
+            right: 8px;
+            top: 8px;
+        }
+
+        .wl-section-heading h2 {
+            font-size: 23px;
+        }
+
+        .wl-scroll-hint {
+            display: none;
+        }
+
+        .wl-bottom {
+            margin: 60px auto;
+        }
+
+        .wl-bottom-box {
+            min-height: 300px;
+            padding: 27px;
+        }
+
+        .wl-bottom-content h2 {
+            font-size: 27px;
+        }
+    }
+</style>
+
+
+<div class="wl-home">
+
+
+    <!-- ================= HERO ================= -->
+
+    <section class="wl-hero-wrap">
+
+        <div class="wl-hero">
+
+            <div class="wl-hero-content">
+
+                <div class="wl-eyebrow">
+                    <i class="fa-solid fa-compass"></i>
+                    Your world. Your next escape.
+                </div>
+
+                <h1>
+                    Go somewhere<br>
+                    <span>worth remembering.</span>
+                </h1>
+
+                <p class="wl-hero-description">
+                    Discover beautiful stays, hidden corners and
+                    unforgettable places waiting to become your next story.
+                </p>
+
+                <div class="wl-search">
+
+                    <div class="wl-search-icon">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
+
+                    <div class="wl-search-text">
+                        Search destinations, cities or stays
+                    </div>
+
+                    <a href="/visting" class="wl-search-btn">
+                        Explore
+                    </a>
+
+                </div>
+
+            </div>
+
         </div>
-      </div>
-        </a>
-      
-    <% } %>
-  </div>
+
+    </section>
+
+
+    <!-- ================= TRENDING ================= -->
+
+    <section class="wl-trending">
+
+        <div class="wl-trending-top">
+
+            <div>
+
+                <div class="wl-trending-title">
+                    Trending now
+                </div>
+
+                <div class="wl-trending-subtitle">
+                    Find the vibe you're looking for
+                </div>
+
+            </div>
+
+            <div class="wl-scroll-hint">
+                Explore categories →
+            </div>
+
+        </div>
+
+
+        <div class="wl-categories">
+
+            <a href="/visting" class="wl-category">
+
+                <i class="fa-solid fa-fire"></i>
+
+                <span>Trending</span>
+
+                <small>Popular now</small>
+
+            </a>
+
+
+            <a href="/visting" class="wl-category">
+
+                <i class="fa-solid fa-mountain"></i>
+
+                <span>Mountains</span>
+
+                <small>Fresh air</small>
+
+            </a>
+
+
+            <a href="/visting" class="wl-category">
+
+                <i class="fa-solid fa-mountain-sun"></i>
+
+                <span>Hill Stations</span>
+
+                <small>Slow down</small>
+
+            </a>
+
+
+            <a href="/visting" class="wl-category">
+
+                <i class="fa-solid fa-water"></i>
+
+                <span>Beach</span>
+
+                <small>Chase waves</small>
+
+            </a>
+
+
+            <a href="/visting" class="wl-category">
+
+                <i class="fa-solid fa-campground"></i>
+
+                <span>Adventure</span>
+
+                <small>Get outside</small>
+
+            </a>
+
+
+            <a href="/visting" class="wl-category">
+
+                <i class="fa-solid fa-tree"></i>
+
+                <span>Nature</span>
+
+                <small>Into the wild</small>
+
+            </a>
+
+
+            <a href="/visting" class="wl-category">
+
+                <i class="fa-solid fa-landmark"></i>
+
+                <span>Heritage</span>
+
+                <small>Past & culture</small>
+
+            </a>
+
+
+            <a href="/visting" class="wl-category">
+
+                <i class="fa-solid fa-city"></i>
+
+                <span>City</span>
+
+                <small>Urban life</small>
+
+            </a>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================= LISTINGS ================= -->
+
+    <section class="wl-featured">
+
+        <div class="wl-section-heading">
+
+            <div>
+
+                <h2>
+                    Stay somewhere unforgettable
+                </h2>
+
+                <p>
+                    Handpicked places for your next adventure
+                </p>
+
+            </div>
+
+            <a href="/visting" class="wl-view-all">
+                View all →
+            </a>
+
+        </div>
+
+
+        <% if (allvistings && allvistings.length > 0) { %>
+
+            <div class="wl-grid">
+
+                <% for (let visting of allvistings) { %>
+
+                    <article class="wl-card">
+
+                        <a
+                            href="/visting/<%= visting._id %>"
+                            class="wl-card-link"
+                        >
+
+                            <div class="wl-image">
+
+                                <img
+                                    src="<%= visting.image.url %>"
+                                    alt="<%= visting.title %>"
+                                    loading="lazy"
+                                >
+
+
+                                <div class="wl-favorite">
+                                    Guest favorite
+                                </div>
+
+
+                                <button
+                                    type="button"
+                                    class="wl-heart"
+                                    onclick="event.preventDefault(); event.stopPropagation();"
+                                    aria-label="Add to wishlist"
+                                >
+                                    ♡
+                                </button>
+
+                            </div>
+
+
+                            <div class="wl-card-info">
+
+                                <div class="wl-location-row">
+
+                                    <div class="wl-location">
+
+                                        <i class="fa-solid fa-location-dot"></i>
+
+                                        <span>
+                                            <%= visting.location %>
+                                        </span>
+
+                                    </div>
+
+
+                                    <div class="wl-rating">
+
+                                        <i class="fa-solid fa-star"></i>
+                                        4.8
+
+                                    </div>
+
+                                </div>
+
+
+                                <h3 class="wl-title">
+                                    <%= visting.title %>
+                                </h3>
+
+
+                                <div class="wl-price">
+
+                                    <strong>
+                                        ₹<%= Number(visting.price).toLocaleString("en-IN") %>
+                                    </strong>
+
+                                    / night
+
+                                </div>
+
+                            </div>
+
+                        </a>
+
+                    </article>
+
+                <% } %>
+
+            </div>
+
+        <% } else { %>
+
+            <div class="wl-empty">
+
+                <i class="fa-solid fa-house"></i>
+
+                <h3>
+                    No stays available yet
+                </h3>
+
+                <p>
+                    Be the first to add a beautiful place.
+                </p>
+
+                <a href="/visting/new" class="wl-view-all">
+                    Add a listing →
+                </a>
+
+            </div>
+
+        <% } %>
+
+    </section>
+
+
+    <!-- ================= BOTTOM DISCOVER ================= -->
+
+    <section class="wl-bottom">
+
+        <div class="wl-bottom-box">
+
+            <div class="wl-bottom-content">
+
+                <h2>
+                    Don't just travel.<br>
+                    Experience it.
+                </h2>
+
+                <p>
+                    Your next memorable journey could be
+                    one click away.
+                </p>
+
+                <a
+                    href="/visting"
+                    class="wl-bottom-button"
+                >
+                    Explore Wanderlust
+                </a>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
 </div>

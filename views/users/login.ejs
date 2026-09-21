@@ -1,53 +1,439 @@
 <% layout("/layouts/bolierplate.ejs") %>
 
-<div class="row">
-    <h1 class="col-6 offset-3"> LOGIN to...</h1>
+<style>
+  .login-page {
+    min-height: calc(100vh - 70px);
+    background: #f7f7f5;
+    display: flex;
+    align-items: center;
+    padding: 55px 0;
+  }
 
-    <div class="col-6 offset-3">
-        <form method="POST" action="/login" novalidate class="needs-validation">
+  .login-wrapper {
+    max-width: 1050px;
+    margin: auto;
+  }
+
+  /* =========================
+     LEFT VISUAL
+     ========================= */
+
+  .login-visual {
+    position: relative;
+    min-height: 570px;
+    border-radius: 28px;
+    overflow: hidden;
+    background:
+      linear-gradient(
+        180deg,
+        rgba(0,0,0,0.05),
+        rgba(0,0,0,0.78)
+      ),
+      url("https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=1200&q=85")
+      center/cover no-repeat;
+
+    display: flex;
+    align-items: flex-end;
+    padding: 38px;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.12);
+  }
+
+  .visual-content {
+    color: #fff;
+    max-width: 430px;
+  }
+
+  .visual-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 13px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.14);
+    border: 1px solid rgba(255,255,255,0.25);
+    backdrop-filter: blur(10px);
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    margin-bottom: 17px;
+  }
+
+  .visual-content h1 {
+    font-size: clamp(2.3rem, 5vw, 4rem);
+    line-height: 0.98;
+    letter-spacing: -2px;
+    font-weight: 800;
+    margin-bottom: 16px;
+  }
+
+  .visual-content p {
+    color: rgba(255,255,255,0.82);
+    font-size: 0.95rem;
+    line-height: 1.65;
+    margin: 0;
+  }
+
+  /* =========================
+     LOGIN CARD
+     ========================= */
+
+  .login-card {
+    background: #fff;
+    border: 1px solid #e7e7e7;
+    border-radius: 28px;
+    padding: 42px;
+    box-shadow: 0 20px 55px rgba(0,0,0,0.07);
+  }
+
+  .brand-mark {
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
+    background: #111;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    margin-bottom: 25px;
+  }
+
+  .login-kicker {
+    color: #888;
+    font-size: 0.72rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 8px;
+  }
+
+  .login-title {
+    font-size: 2.2rem;
+    font-weight: 800;
+    letter-spacing: -1.3px;
+    color: #111;
+    margin-bottom: 9px;
+  }
+
+  .login-subtitle {
+    color: #888;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin-bottom: 32px;
+  }
+
+  /* =========================
+     FORM
+     ========================= */
+
+  .form-label {
+    font-size: 0.82rem;
+    font-weight: 750;
+    color: #222;
+    margin-bottom: 8px;
+  }
+
+  .form-control {
+    min-height: 51px;
+    border: 1px solid #dedede;
+    border-radius: 13px;
+    padding: 13px 15px;
+    font-size: 0.92rem;
+    transition: all 0.2s ease;
+  }
+
+  .form-control:hover {
+    border-color: #bdbdbd;
+  }
+
+  .form-control:focus {
+    border-color: #111;
+    box-shadow: 0 0 0 4px rgba(0,0,0,0.055);
+  }
+
+  .form-control::placeholder {
+    color: #aaa;
+  }
+
+  .login-btn {
+    width: 100%;
+    min-height: 52px;
+    margin-top: 8px;
+    border: none;
+    border-radius: 13px;
+    background: #111;
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: 750;
+    letter-spacing: 0.2px;
+    transition: all 0.25s ease;
+  }
+
+  .login-btn:hover {
+    background: #000;
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+  }
+
+  .login-arrow {
+    display: inline-block;
+    margin-left: 6px;
+    transition: transform 0.2s ease;
+  }
+
+  .login-btn:hover .login-arrow {
+    transform: translateX(4px);
+  }
+
+  /* =========================
+     DIVIDER
+     ========================= */
+
+  .login-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 27px 0 22px;
+    color: #aaa;
+    font-size: 0.75rem;
+  }
+
+  .login-divider::before,
+  .login-divider::after {
+    content: "";
+    height: 1px;
+    flex: 1;
+    background: #e8e8e8;
+  }
+
+  /* =========================
+     FOOT NOTE
+     ========================= */
+
+  .login-note {
+    text-align: center;
+    color: #888;
+    font-size: 0.78rem;
+    line-height: 1.5;
+  }
+
+  .login-note span {
+    color: #222;
+    font-weight: 700;
+  }
+
+  /* =========================
+     RESPONSIVE
+     ========================= */
+
+  @media (max-width: 991px) {
+
+    .login-visual {
+      min-height: 390px;
+    }
+
+    .login-card {
+      padding: 35px;
+    }
+  }
+
+  @media (max-width: 767px) {
+
+    .login-page {
+      padding: 25px 0 45px;
+    }
+
+    .login-visual {
+      min-height: 330px;
+      border-radius: 22px;
+      padding: 27px;
+    }
+
+    .visual-content h1 {
+      font-size: 2.5rem;
+    }
+
+    .login-card {
+      margin-top: 5px;
+      padding: 30px 23px;
+      border-radius: 22px;
+    }
+
+    .login-title {
+      font-size: 1.9rem;
+    }
+  }
+</style>
+
+
+<div class="login-page">
+
+  <div class="container login-wrapper">
+
+    <div class="row g-4 align-items-stretch">
+
+
+      <!-- =================================
+           TRAVEL VISUAL
+           ================================= -->
+
+      <div class="col-lg-6">
+
+        <div class="login-visual">
+
+          <div class="visual-content">
+
+            <div class="visual-badge">
+              ✦ Wanderlust
+            </div>
+
+            <h1>
+              Come back<br>
+              to somewhere<br>
+              worth remembering.
+            </h1>
+
+            <p>
+              Your next escape might already be waiting.
+              Sign in and continue discovering places,
+              people and experiences worth travelling for.
+            </p>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- =================================
+           LOGIN FORM
+           ================================= -->
+
+      <div class="col-lg-6">
+
+        <div class="login-card h-100">
+
+          <div class="brand-mark">
+            🧭
+          </div>
+
+          <div class="login-kicker">
+            Welcome back
+          </div>
+
+          <h2 class="login-title">
+            Login to Wanderlust
+          </h2>
+
+          <p class="login-subtitle">
+            Pick up where you left off and keep exploring
+            your next unforgettable stay.
+          </p>
+
+
+          <form
+            method="POST"
+            action="/login"
+            novalidate
+            class="needs-validation"
+          >
+
 
             <!-- USERNAME -->
-            <div class="mb-3">
-                <label for="username" class="form-label">USERNAME</label>
 
-                <input
-                    type="text"
-                    id="username"
-                    name="username"
-                    placeholder="Enter your USERNAME"
-                    class="form-control"
-                    required
-                >
+            <div class="mb-4">
 
-                <div class="valid-feedback">
-                    It looks good!
-                </div>
-            </div>
-           <!-- PASSWORD -->
-            <div class="mb-3">
-                <label for="password" class="form-label">PASSWORD</label>
+              <label
+                for="username"
+                class="form-label"
+              >
+                Username
+              </label>
 
-                <input
-                    type="password"
-                    id="password"
-                    name="password"
-                    placeholder="Enter your password"
-                    class="form-control"
-                    required
-                >
+              <input
+                type="text"
+                id="username"
+                name="username"
+                placeholder="Enter your username"
+                class="form-control"
+                required
+                autocomplete="username"
+              >
 
-                <div class="valid-feedback">
-                    It looks good!
-                </div>
-                <div class = "invalid-feedback">
-                   please set as a special character, a number, and a capital letter.
+              <div class="valid-feedback">
+                Looks good!
+              </div>
 
-                </div>
-    
+              <div class="invalid-feedback">
+                Please enter your username.
+              </div>
+
             </div>
 
-            <button class="btn btn-success">LOGIN</button>
 
-        </form>
+            <!-- PASSWORD -->
+
+            <div class="mb-4">
+
+              <label
+                for="password"
+                class="form-label"
+              >
+                Password
+              </label>
+
+              <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Enter your password"
+                class="form-control"
+                required
+                autocomplete="current-password"
+              >
+
+              <div class="valid-feedback">
+                Looks good!
+              </div>
+
+              <div class="invalid-feedback">
+                Please enter your password.
+              </div>
+
+            </div>
+
+
+            <!-- LOGIN BUTTON -->
+
+            <button
+              type="submit"
+              class="login-btn"
+            >
+              Continue your journey
+              <span class="login-arrow">→</span>
+            </button>
+
+          </form>
+
+
+          <div class="login-divider">
+            <span>TRAVEL • DISCOVER • REMEMBER</span>
+          </div>
+
+
+          <div class="login-note">
+            <span>Wanderlust</span> — go somewhere worth remembering.
+          </div>
+
         </div>
-        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

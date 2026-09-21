@@ -1,78 +1,518 @@
 <% layout("/layouts/bolierplate.ejs") %>
 
-<div class="row">
-    <h1 class="col-6 offset-3">SIGNUP ON WANDERLUST</h1>
+<style>
+  /* =========================
+     WANDERLUST SIGNUP PAGE
+     ========================= */
 
-    <div class="col-6 offset-3">
+  .signup-page {
+    min-height: calc(100vh - 70px);
+    background: #f7f7f5;
+    display: flex;
+    align-items: center;
+    padding: 55px 0;
+  }
 
-        <form method="POST" action="/signup" novalidate class="needs-validation">
+  .signup-wrapper {
+    max-width: 1050px;
+    margin: auto;
+  }
+
+  /* =========================
+     LEFT CONTENT
+     ========================= */
+
+  .signup-visual {
+    position: relative;
+    min-height: 600px;
+    border-radius: 28px;
+    overflow: hidden;
+
+    background:
+      linear-gradient(
+        180deg,
+        rgba(0,0,0,0.04),
+        rgba(0,0,0,0.78)
+      ),
+      url("https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1200&q=85")
+      center/cover no-repeat;
+
+    display: flex;
+    align-items: flex-end;
+    padding: 38px;
+
+    box-shadow: 0 25px 60px rgba(0,0,0,0.12);
+  }
+
+  .signup-visual-content {
+    color: #fff;
+    max-width: 440px;
+  }
+
+  .visual-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+
+    padding: 8px 13px;
+    border-radius: 999px;
+
+    background: rgba(255,255,255,0.14);
+    border: 1px solid rgba(255,255,255,0.25);
+
+    backdrop-filter: blur(10px);
+
+    font-size: 0.73rem;
+    font-weight: 700;
+    letter-spacing: 0.9px;
+    text-transform: uppercase;
+
+    margin-bottom: 17px;
+  }
+
+  .signup-visual-content h1 {
+    font-size: clamp(2.4rem, 5vw, 4rem);
+    line-height: 0.98;
+    letter-spacing: -2.3px;
+    font-weight: 800;
+    margin-bottom: 17px;
+  }
+
+  .signup-visual-content p {
+    color: rgba(255,255,255,0.82);
+    font-size: 0.95rem;
+    line-height: 1.65;
+    margin: 0;
+  }
+
+  /* =========================
+     SIGNUP CARD
+     ========================= */
+
+  .signup-card {
+    background: #fff;
+    border: 1px solid #e7e7e7;
+    border-radius: 28px;
+
+    padding: 42px;
+
+    box-shadow: 0 20px 55px rgba(0,0,0,0.07);
+  }
+
+  .brand-mark {
+    width: 46px;
+    height: 46px;
+
+    border-radius: 14px;
+
+    background: #111;
+    color: #fff;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 20px;
+
+    margin-bottom: 25px;
+  }
+
+  .signup-kicker {
+    color: #888;
+    font-size: 0.72rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 8px;
+  }
+
+  .signup-title {
+    font-size: 2.2rem;
+    font-weight: 800;
+    letter-spacing: -1.4px;
+    color: #111;
+    margin-bottom: 9px;
+  }
+
+  .signup-subtitle {
+    color: #888;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin-bottom: 32px;
+  }
+
+  /* =========================
+     FORM
+     ========================= */
+
+  .form-label {
+    font-size: 0.82rem;
+    font-weight: 750;
+    color: #222;
+    margin-bottom: 8px;
+  }
+
+  .form-control {
+    min-height: 51px;
+
+    border: 1px solid #dedede;
+    border-radius: 13px;
+
+    padding: 13px 15px;
+
+    font-size: 0.92rem;
+
+    transition: all 0.2s ease;
+  }
+
+  .form-control:hover {
+    border-color: #bdbdbd;
+  }
+
+  .form-control:focus {
+    border-color: #111;
+    box-shadow: 0 0 0 4px rgba(0,0,0,0.055);
+  }
+
+  .form-control::placeholder {
+    color: #aaa;
+  }
+
+  /* =========================
+     SIGNUP BUTTON
+     ========================= */
+
+  .signup-btn {
+    width: 100%;
+    min-height: 52px;
+
+    margin-top: 7px;
+
+    border: none;
+    border-radius: 13px;
+
+    background: #111;
+    color: #fff;
+
+    font-size: 0.9rem;
+    font-weight: 750;
+
+    transition: all 0.25s ease;
+  }
+
+  .signup-btn:hover {
+    background: #000;
+    color: #fff;
+
+    transform: translateY(-2px);
+
+    box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+  }
+
+  .signup-arrow {
+    display: inline-block;
+    margin-left: 6px;
+
+    transition: transform 0.2s ease;
+  }
+
+  .signup-btn:hover .signup-arrow {
+    transform: translateX(4px);
+  }
+
+  /* =========================
+     DIVIDER
+     ========================= */
+
+  .signup-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    margin: 27px 0 21px;
+
+    color: #aaa;
+    font-size: 0.72rem;
+    letter-spacing: 0.4px;
+  }
+
+  .signup-divider::before,
+  .signup-divider::after {
+    content: "";
+
+    height: 1px;
+
+    flex: 1;
+
+    background: #e8e8e8;
+  }
+
+  /* =========================
+     TRUST NOTE
+     ========================= */
+
+  .signup-note {
+    text-align: center;
+
+    color: #888;
+
+    font-size: 0.77rem;
+
+    line-height: 1.55;
+  }
+
+  .signup-note span {
+    color: #222;
+    font-weight: 700;
+  }
+
+  /* =========================
+     MOBILE
+     ========================= */
+
+  @media (max-width: 991px) {
+
+    .signup-visual {
+      min-height: 390px;
+    }
+
+    .signup-card {
+      padding: 35px;
+    }
+  }
+
+  @media (max-width: 767px) {
+
+    .signup-page {
+      padding: 25px 0 45px;
+    }
+
+    .signup-visual {
+      min-height: 330px;
+      border-radius: 22px;
+      padding: 27px;
+    }
+
+    .signup-visual-content h1 {
+      font-size: 2.5rem;
+    }
+
+    .signup-card {
+      margin-top: 5px;
+      padding: 30px 23px;
+      border-radius: 22px;
+    }
+
+    .signup-title {
+      font-size: 1.9rem;
+    }
+  }
+</style>
+
+
+<div class="signup-page">
+
+  <div class="container signup-wrapper">
+
+    <div class="row g-4 align-items-stretch">
+
+
+      <!-- =================================
+           TRAVEL VISUAL
+           ================================= -->
+
+      <div class="col-lg-6">
+
+        <div class="signup-visual">
+
+          <div class="signup-visual-content">
+
+            <div class="visual-badge">
+              ✦ Begin the journey
+            </div>
+
+            <h1>
+              The world<br>
+              is waiting<br>
+              for you.
+            </h1>
+
+            <p>
+              Create your Wanderlust account and discover
+              places that turn ordinary trips into stories
+              worth remembering.
+            </p>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- =================================
+           SIGNUP FORM
+           ================================= -->
+
+      <div class="col-lg-6">
+
+        <div class="signup-card h-100">
+
+
+          <div class="brand-mark">
+            🧭
+          </div>
+
+
+          <div class="signup-kicker">
+            New here?
+          </div>
+
+
+          <h2 class="signup-title">
+            Start your journey
+          </h2>
+
+
+          <p class="signup-subtitle">
+            Join Wanderlust and start discovering
+            your next unforgettable stay.
+          </p>
+
+
+          <form
+            method="POST"
+            action="/signup"
+            novalidate
+            class="needs-validation"
+          >
+
 
             <!-- USERNAME -->
-            <div class="mb-3">
-                <label for="username" class="form-label">USERNAME</label>
 
-                <input
-                    type="text"
-                    id="username"
-                    name="username"
-                    placeholder="Enter your USERNAME"
-                    class="form-control"
-                    required
-                >
+            <div class="mb-4">
 
-                <div class="valid-feedback">
-                    It looks good!
-                </div>
+              <label
+                for="username"
+                class="form-label"
+              >
+                Username
+              </label>
+
+              <input
+                type="text"
+                id="username"
+                name="username"
+                placeholder="Choose your username"
+                class="form-control"
+                required
+                autocomplete="username"
+              >
+
+              <div class="valid-feedback">
+                Looks good!
+              </div>
+
+              <div class="invalid-feedback">
+                Please choose a username.
+              </div>
+
             </div>
+
 
             <!-- EMAIL -->
-            <div class="mb-3">
-                <label for="email" class="form-label">EMAIL</label>
 
-                <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    placeholder="Enter your email"
-                    class="form-control"
-                    required
-                >
+            <div class="mb-4">
 
-                <div class="valid-feedback">
-                    It looks good!
-                </div>
-              <data class="invalid-feedback">
+              <label
+                for="email"
+                class="form-label"
+              >
+                Email
+              </label>
+
+              <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="you@example.com"
+                class="form-control"
+                required
+                autocomplete="email"
+              >
+
+              <div class="valid-feedback">
+                Looks good!
+              </div>
+
+              <div class="invalid-feedback">
                 Please provide a valid email.
-                </data>
+              </div>
 
             </div>
+
 
             <!-- PASSWORD -->
-            <div class="mb-3">
-                <label for="password" class="form-label">PASSWORD</label>
 
-                <input
-                    type="password"
-                    id="password"
-                    name="password"
-                    placeholder="Enter your password"
-                    class="form-control"
-                    required
-                >
+            <div class="mb-4">
 
-                <div class="valid-feedback">
-                    It looks good!
-                </div>
-                <div class = "invalid-feedback">
-                   please set as a special character, a number, and a capital letter.
+              <label
+                for="password"
+                class="form-label"
+              >
+                Password
+              </label>
 
-                </div>
-    
+              <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Create your password"
+                class="form-control"
+                required
+                autocomplete="new-password"
+              >
+
+              <div class="valid-feedback">
+                Looks good!
+              </div>
+
+              <div class="invalid-feedback">
+                Please enter a password.
+              </div>
+
             </div>
 
-            <button class="btn btn-success">SIGNUP</button>
 
-        </form>
+            <!-- BUTTON -->
+
+            <button
+              type="submit"
+              class="signup-btn"
+            >
+              Create my account
+              <span class="signup-arrow">→</span>
+            </button>
+
+          </form>
+
+
+          <div class="signup-divider">
+            <span>EXPLORE • CONNECT • DISCOVER</span>
+          </div>
+
+
+          <div class="signup-note">
+            <span>Wanderlust</span> — your next story starts here.
+          </div>
+
+
+        </div>
+
+      </div>
 
     </div>
+
+  </div>
+
 </div>

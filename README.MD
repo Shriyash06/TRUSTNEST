@@ -521,3 +521,36 @@ res.locals
 Flash messages
 Authentication middleware
 Redirect flow after login
+Day 16 – Edit & Delete Listings
+
+Implemented edit listing functionality.
+Added pre-filled edit form.
+Used PUT request with Method Override.
+Updated listing data using Mongoose.
+Implemented listing deletion.
+Added owner authorization so only the listing owner can edit/delete.
+
+Day 17 – Cloudinary Image Upload
+
+Integrated Cloudinary for image storage.
+Added Multer and multer-storage-cloudinary.
+Implemented image upload while creating listings.
+Implemented image replacement while editing listings.
+Removed dependency on local image storage.
+
+Day 18 – Mapbox & Geocoding
+
+Integrated Mapbox into the listing details page.
+Added geocoding to convert a listing's location into geographical coordinates.
+Stored listing geometry (longitude, latitude) in MongoDB.
+Displayed the listing location dynamically on the map.
+Added Mapbox marker for the listing location.
+Connected the listing's location data with the frontend map.
+
+Day 19 – Final Integration & UI
+
+Connected authentication, listings, reviews, Cloudinary and Mapbox.
+Improved listing pages and responsive UI.
+Redesigned Home, Show, New, Edit, Login and Signup pages.
+Added a premium travel-focused visual design.
+Tested complete listing workflow from creation to editing and deletion.

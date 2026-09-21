@@ -1,68 +1,1270 @@
 <% layout("/layouts/bolierplate.ejs") %>
-<body>
- 
-  <div class="row">
-    <div class = "col-8 offset-2 mt-3">
-       <h1> <%= visting.title%>></h1>
-    
-  <img src="<%=visting.image.url%>" class="card-img-top show-img" alt="listing image">
-  <div class="card-body" class = "visting-card">
-    <p class="card-text"><%=visting.title%></p>
-  </div>
 
-  
-  </body>
-  
-    
-    <ul>
- 
-   <li><p> <%= visting.description%></p></li>  
-     <li> &#8377; <%= visting.price%></li>
-      <li><p> <%= visting.location%></p></li> 
-       <li><p> <%= visting.country%></p></li> 
-       </ul>
-       <a href = "/visting/<%=visting.id%>/edit"> EDIT LISTINGS</a><br/><br/><br/>
-       <form method = "post" action = "/visting/<%=visting.id%>?_method=DELETE">
-        <button> DELETE LISTING</button>
-       </form>
-       </div>
-       <hr/>
-       <div class = "col -8 offset-2 mb -3" >
-        <h1> leave a review</h1>
-        <form action = "/visting/<%=visting.id%>/review" method = "post" novalidate  class = "needs-validation"> 
-          <div class = "mb-3 mt-3">
-            <label for = "Rating" class = "form-label">Rating</label>
-            <input type = "range" min = "1" max = "7" id = "rating" name="review[rating]" class = "form-range"> 
+<script>
+  let mapToken = "<%= process.env.MAP_TOKEN %>";
+  const visting = <%- JSON.stringify(visting) %>;
+</script>
+
+
+<style>
+
+  /* =========================================================
+     WANDERLUST — SHOW LISTING
+  ========================================================= */
+
+  .show-page {
+    background: #fff;
+    min-height: 100vh;
+    color: #171717;
+  }
+
+  .listing-container {
+    max-width: 1120px;
+    margin: auto;
+  }
+
+
+  /* =========================================================
+     HERO
+  ========================================================= */
+
+  .hero-wrapper {
+    position: relative;
+    overflow: hidden;
+    border-radius: 26px;
+    background: #111;
+  }
+
+  .hero-image {
+    width: 100%;
+    height: 560px;
+
+    display: block;
+
+    object-fit: cover;
+
+    border-radius: 26px;
+
+    transition: transform .7s ease;
+  }
+
+  .hero-wrapper:hover .hero-image {
+    transform: scale(1.015);
+  }
+
+  .hero-gradient {
+    position: absolute;
+    inset: 0;
+
+    border-radius: 26px;
+
+    background:
+      linear-gradient(
+        to bottom,
+        rgba(0,0,0,.02) 35%,
+        rgba(0,0,0,.58) 100%
+      );
+
+    pointer-events: none;
+  }
+
+  .hero-location {
+    position: absolute;
+
+    left: 28px;
+    bottom: 27px;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 9px 14px;
+
+    border: 1px solid rgba(255,255,255,.25);
+    border-radius: 999px;
+
+    background: rgba(0,0,0,.25);
+
+    backdrop-filter: blur(10px);
+
+    color: #fff;
+
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+
+  /* =========================================================
+     MAIN GRID
+  ========================================================= */
+
+  .listing-main {
+    padding-top: 42px;
+  }
+
+
+  /* =========================================================
+     TITLE
+  ========================================================= */
+
+  .listing-title {
+    margin-bottom: 9px;
+
+    color: #151515;
+
+    font-size: clamp(2rem, 4vw, 3rem);
+
+    font-weight: 800;
+
+    letter-spacing: -1.8px;
+
+    line-height: 1.08;
+  }
+
+  .location-text {
+    color: #777;
+
+    font-size: .95rem;
+  }
+
+
+  /* =========================================================
+     HOST
+  ========================================================= */
+
+  .host-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-top: 27px;
+    padding: 20px 0;
+
+    border-top: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+  }
+
+  .host-avatar {
+    width: 52px;
+    height: 52px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #171717;
+
+    color: #fff;
+
+    font-size: 18px;
+    font-weight: 750;
+
+    box-shadow:
+      0 7px 18px rgba(0,0,0,.12);
+  }
+
+  .host-label {
+    color: #999;
+
+    font-size: 12px;
+  }
+
+
+  /* =========================================================
+     ABOUT
+  ========================================================= */
+
+  .about-section {
+    padding: 38px 0 15px;
+  }
+
+  .section-heading {
+    margin-bottom: 13px;
+
+    color: #181818;
+
+    font-size: 1.25rem;
+
+    font-weight: 750;
+
+    letter-spacing: -.4px;
+  }
+
+  .description-text {
+    max-width: 850px;
+
+    color: #666;
+
+    font-size: .97rem;
+
+    line-height: 1.85;
+  }
+
+
+  /* =========================================================
+     DETAILS
+  ========================================================= */
+
+  .details-grid {
+    display: grid;
+
+    grid-template-columns:
+      repeat(3, 1fr);
+
+    margin-top: 28px;
+
+    border-top: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+  }
+
+  .detail-item {
+    display: flex;
+    align-items: center;
+
+    gap: 14px;
+
+    min-height: 105px;
+
+    padding: 20px;
+
+    border-right: 1px solid #eee;
+  }
+
+  .detail-item:last-child {
+    border-right: 0;
+  }
+
+  .detail-icon {
+    width: 42px;
+    height: 42px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 13px;
+
+    background: #f6f6f6;
+
+    font-size: 18px;
+  }
+
+  .detail-item strong {
+    display: block;
+
+    margin-bottom: 4px;
+
+    color: #292929;
+
+    font-size: 13px;
+  }
+
+  .detail-item span {
+    display: block;
+
+    color: #888;
+
+    font-size: 12px;
+
+    line-height: 1.45;
+  }
+
+
+  /* =========================================================
+     OWNER ACTIONS
+  ========================================================= */
+
+  .owner-section {
+    margin-top: 38px;
+
+    padding: 24px;
+
+    border: 1px solid #e8e8e8;
+
+    border-radius: 18px;
+
+    background: #fafafa;
+  }
+
+  .owner-actions {
+    display: flex;
+
+    gap: 10px;
+
+    flex-wrap: wrap;
+  }
+
+  .owner-actions .btn {
+    padding: 10px 17px;
+
+    border-radius: 11px;
+
+    font-size: 13px;
+
+    font-weight: 650;
+  }
+
+
+  /* =========================================================
+     REVIEWS
+  ========================================================= */
+
+  .reviews-section {
+    margin-top: 55px;
+
+    padding-top: 45px;
+
+    border-top: 1px solid #eee;
+  }
+
+  .reviews-heading {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    margin-bottom: 28px;
+  }
+
+  .reviews-heading h3 {
+    margin: 0;
+
+    color: #171717;
+
+    font-size: 1.55rem;
+
+    font-weight: 780;
+
+    letter-spacing: -.6px;
+  }
+
+  .review-count {
+    padding: 7px 12px;
+
+    border: 1px solid #e7e7e7;
+
+    border-radius: 999px;
+
+    background: #fafafa;
+
+    color: #777;
+
+    font-size: 11px;
+  }
+
+
+  /* =========================================================
+     REVIEW FORM
+  ========================================================= */
+
+  .review-box {
+    margin-bottom: 35px;
+
+    padding: 27px;
+
+    border: 1px solid #e6e6e6;
+
+    border-radius: 20px;
+
+    background: #fafafa;
+  }
+
+  .review-box textarea {
+    min-height: 125px;
+
+    resize: vertical;
+
+    border-radius: 12px;
+
+    border-color: #ddd;
+  }
+
+  .review-box textarea:focus {
+    border-color: #222;
+
+    box-shadow:
+      0 0 0 4px rgba(0,0,0,.05);
+  }
+
+
+  /* =========================================================
+     REVIEW CARD
+  ========================================================= */
+
+  .review-card {
+    height: 100%;
+
+    padding: 23px;
+
+    border: 1px solid #ededed;
+
+    border-radius: 18px;
+
+    background: #fff;
+
+    transition:
+      transform .25s ease,
+      box-shadow .25s ease;
+  }
+
+  .review-card:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+      0 12px 30px rgba(0,0,0,.06);
+  }
+
+  .review-avatar {
+    width: 43px;
+    height: 43px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #f1f1f1;
+
+    color: #333;
+
+    font-size: 14px;
+    font-weight: 750;
+  }
+
+  .review-date {
+    margin-top: 2px;
+
+    color: #999;
+
+    font-size: 11px;
+  }
+
+  .review-comment {
+    color: #666;
+
+    font-size: .88rem;
+
+    line-height: 1.7;
+  }
+
+
+  /* =========================================================
+     EMPTY REVIEW
+  ========================================================= */
+
+  .empty-review {
+    padding: 55px 20px;
+
+    text-align: center;
+
+    border: 1px dashed #d5d5d5;
+
+    border-radius: 20px;
+
+    background: #fafafa;
+  }
+
+  .empty-review-icon {
+    font-size: 38px;
+  }
+
+
+  /* =========================================================
+     MAP
+  ========================================================= */
+
+  .map-section {
+    margin-top: 65px;
+
+    padding-top: 45px;
+
+    border-top: 1px solid #eee;
+  }
+
+  .map-heading {
+    margin-bottom: 7px;
+
+    color: #171717;
+
+    font-size: 1.55rem;
+
+    font-weight: 780;
+
+    letter-spacing: -.5px;
+  }
+
+  .map-subtitle {
+    margin-bottom: 22px;
+
+    color: #888;
+
+    font-size: .86rem;
+  }
+
+  .map-wrapper {
+    overflow: hidden;
+
+    border: 1px solid #e7e7e7;
+
+    border-radius: 22px;
+
+    box-shadow:
+      0 15px 40px rgba(0,0,0,.07);
+  }
+
+  #map {
+    width: 100%;
+    height: 430px;
+  }
+
+
+  /* =========================================================
+     RESPONSIVE
+  ========================================================= */
+
+  @media (max-width: 900px) {
+
+    .hero-image {
+      height: 430px;
+    }
+
+    .details-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .detail-item {
+      border-right: 0;
+
+      border-bottom: 1px solid #eee;
+    }
+
+    .detail-item:last-child {
+      border-bottom: 0;
+    }
+  }
+
+
+  @media (max-width: 768px) {
+
+    .show-page {
+      padding-top: 20px !important;
+    }
+
+    .hero-wrapper,
+    .hero-image,
+    .hero-gradient {
+      border-radius: 17px;
+    }
+
+    .hero-image {
+      height: 330px;
+    }
+
+    .hero-location {
+      left: 17px;
+      bottom: 17px;
+    }
+
+    .listing-main {
+      padding-top: 30px;
+    }
+
+    .listing-title {
+      font-size: 1.85rem;
+
+      letter-spacing: -1px;
+    }
+
+    .host-box {
+      margin-top: 22px;
+    }
+
+    .about-section {
+      padding-top: 30px;
+    }
+
+    .reviews-section,
+    .map-section {
+      margin-top: 45px;
+      padding-top: 35px;
+    }
+
+    #map {
+      height: 350px;
+    }
+  }
+
+
+  @media (max-width: 480px) {
+
+    .listing-container {
+      padding-left: 16px;
+      padding-right: 16px;
+    }
+
+    .hero-image {
+      height: 270px;
+    }
+
+    .listing-title {
+      font-size: 1.65rem;
+    }
+
+    .host-avatar {
+      width: 47px;
+      height: 47px;
+    }
+
+    .review-box {
+      padding: 20px;
+    }
+
+    .reviews-heading h3,
+    .map-heading {
+      font-size: 1.3rem;
+    }
+
+    #map {
+      height: 300px;
+    }
+  }
+
+</style>
+
+
+<div class="show-page py-4">
+
+  <div class="container listing-container">
+
+
+    <!-- =====================================================
+         HERO
+    ====================================================== -->
+
+    <div class="hero-wrapper mb-4">
+
+      <img
+        src="<%= visting.image.url %>"
+        class="hero-image"
+        alt="<%= visting.title %>"
+      >
+
+      <div class="hero-gradient"></div>
+
+      <div class="hero-location">
+
+        📍
+
+        <%= visting.location %>,
+        <%= visting.country %>
+
+      </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         MAIN CONTENT
+    ====================================================== -->
+
+    <div class="listing-main">
+
+
+      <!-- ===================================================
+           TITLE
+      ==================================================== -->
+
+      <div>
+
+        <h1 class="listing-title">
+          <%= visting.title %>
+        </h1>
+
+        <div class="location-text">
+
+          📍
+          <%= visting.location %>,
+          <%= visting.country %>
+
+        </div>
+
+      </div>
+
+
+
+      <!-- ===================================================
+           HOST
+      ==================================================== -->
+
+      <div class="host-box">
+
+        <div class="d-flex align-items-center gap-3">
+
+          <div class="host-avatar">
+
+            <%= visting.owner.username
+              .charAt(0)
+              .toUpperCase() %>
+
           </div>
-          <div class = "mb-3 mt-3">
-            <label for = "comment" class = "form-label">COMMENT</label>
-            <textarea  row = "5" col = "10" id = "comment"  name="review[comment]" class = "form-control" required></textarea>
-            <div class="invalid-feedback">
-              please add some comment for review
+
+
+          <div>
+
+            <div class="fw-semibold">
+
+              Hosted by
+              <%= visting.owner.username %>
+
             </div>
 
+            <div class="host-label">
+              Your Wanderlust host
+            </div>
 
           </div>
-          <button>SUBMIT</button>
 
-        </form>
-        <hr/>
-        <h1>all reviews</h1>
-      
-       <% for( let review of visting.reviews){ %>
-        <div class="card col-6 mb-5 ms-4">
-          <div class="card" >
-             <div class="card-body">
-              <h5 class="card-title">yash shrivastava</h5>
-              <p class="card-text"><%=review.comment%></p>
-                      <p class="card-text"><%=review.rating%> star</p>
-                      <form class = "mb-2 ms-2" method = "post" action = "/visting/<%=visting.id%>/review/<%=review.id%>?_method=DELETE">
-                        <button class="btn- s-btn btn-dark">DELETE</button>
-                      </form>
-             </div>
+        </div>
+
+
+        <div class="d-none d-sm-block text-muted small">
+
+          ✦ Stay somewhere memorable
+
+        </div>
+
+      </div>
+
+
+
+      <!-- ===================================================
+           DESCRIPTION
+      ==================================================== -->
+
+      <div class="about-section">
+
+        <h4 class="section-heading">
+          About this place
+        </h4>
+
+        <p class="description-text mb-0">
+          <%= visting.description %>
+        </p>
+
+      </div>
+
+
+
+      <!-- ===================================================
+           DETAILS
+      ==================================================== -->
+
+      <div class="details-grid">
+
+
+        <div class="detail-item">
+
+          <div class="detail-icon">
+            🏡
           </div>
+
+          <div>
+
+            <strong>
+              Entire place
+            </strong>
+
+            <span>
+              You’ll have the place all to yourself.
+            </span>
+
           </div>
-          <%}%>
-       </div>
-    
-</body>
+
+        </div>
+
+
+        <div class="detail-item">
+
+          <div class="detail-icon">
+            📍
+          </div>
+
+          <div>
+
+            <strong>
+              Great location
+            </strong>
+
+            <span>
+              Located in <%= visting.location %>.
+            </span>
+
+          </div>
+
+        </div>
+
+
+        <div class="detail-item">
+
+          <div class="detail-icon">
+            🌎
+          </div>
+
+          <div>
+
+            <strong>
+              Explore <%= visting.country %>
+            </strong>
+
+            <span>
+              Discover the local area and nearby attractions.
+            </span>
+
+          </div>
+
+        </div>
+
+
+      </div>
+
+
+
+      <!-- ===================================================
+           OWNER ACTIONS
+      ==================================================== -->
+
+      <% if(currentUser && visting.owner._id.equals(currentUser._id)) { %>
+
+        <div class="owner-section">
+
+          <h5 class="fw-bold mb-2">
+            Manage your listing
+          </h5>
+
+          <p class="text-muted small mb-3">
+            Update your stay information or remove this listing.
+          </p>
+
+
+          <div class="owner-actions">
+
+
+            <a
+              href="/visting/<%= visting.id %>/edit"
+              class="btn btn-dark"
+            >
+              ✏️ Edit Listing
+            </a>
+
+
+            <form
+              method="post"
+              action="/visting/<%= visting.id %>?_method=DELETE"
+            >
+
+              <button
+                type="submit"
+                class="btn btn-outline-danger"
+              >
+                🗑️ Delete Listing
+              </button>
+
+            </form>
+
+
+          </div>
+
+        </div>
+
+      <% } %>
+
+
+
+      <!-- ===================================================
+           REVIEWS
+      ==================================================== -->
+
+      <div class="reviews-section">
+
+
+        <div class="reviews-heading">
+
+          <h3>
+            ⭐ Reviews
+          </h3>
+
+          <span class="review-count">
+
+            <%= visting.reviews.length %>
+
+            <%= visting.reviews.length === 1
+              ? "Review"
+              : "Reviews" %>
+
+          </span>
+
+        </div>
+
+
+
+        <!-- =================================================
+             REVIEW FORM
+        ================================================== -->
+
+        <% if(currentUser) { %>
+
+          <div class="review-box">
+
+            <h5 class="fw-bold mb-1">
+              Leave a review
+            </h5>
+
+            <p class="text-muted small mb-4">
+              Share your experience with other travelers.
+            </p>
+
+
+            <form
+              action="/visting/<%= visting.id %>/review"
+              method="post"
+              novalidate
+              class="needs-validation"
+            >
+
+
+              <!-- RATING -->
+
+              <div class="mb-4">
+
+                <label class="form-label fw-semibold">
+                  Rating
+                </label>
+
+
+                <fieldset class="starability-slot">
+
+
+                  <input
+                    type="radio"
+                    id="no-rate"
+                    class="input-no-rate"
+                    name="review[rating]"
+                    value="0"
+                    checked
+                    aria-label="No rating."
+                  />
+
+
+                  <input
+                    type="radio"
+                    id="first-rate1"
+                    name="review[rating]"
+                    value="1"
+                    required
+                  />
+
+                  <label
+                    for="first-rate1"
+                    title="Terrible"
+                  >
+                    1 star
+                  </label>
+
+
+                  <input
+                    type="radio"
+                    id="first-rate2"
+                    name="review[rating]"
+                    value="2"
+                  />
+
+                  <label
+                    for="first-rate2"
+                    title="Not good"
+                  >
+                    2 stars
+                  </label>
+
+
+                  <input
+                    type="radio"
+                    id="first-rate3"
+                    name="review[rating]"
+                    value="3"
+                  />
+
+                  <label
+                    for="first-rate3"
+                    title="Average"
+                  >
+                    3 stars
+                  </label>
+
+
+                  <input
+                    type="radio"
+                    id="first-rate4"
+                    name="review[rating]"
+                    value="4"
+                  />
+
+                  <label
+                    for="first-rate4"
+                    title="Very good"
+                  >
+                    4 stars
+                  </label>
+
+
+                  <input
+                    type="radio"
+                    id="first-rate5"
+                    name="review[rating]"
+                    value="5"
+                  />
+
+                  <label
+                    for="first-rate5"
+                    title="Amazing"
+                  >
+                    5 stars
+                  </label>
+
+
+                </fieldset>
+
+              </div>
+
+
+
+              <!-- COMMENT -->
+
+              <div class="mb-4">
+
+                <label
+                  for="comment"
+                  class="form-label fw-semibold"
+                >
+                  Your review
+                </label>
+
+
+                <textarea
+                  id="comment"
+                  name="review[comment]"
+                  class="form-control"
+                  placeholder="What did you like about this place?"
+                  required
+                ></textarea>
+
+
+                <div class="invalid-feedback">
+                  Please add some comment for your review.
+                </div>
+
+              </div>
+
+
+              <button
+                type="submit"
+                class="btn btn-dark px-4 py-2"
+              >
+                Submit Review →
+              </button>
+
+
+            </form>
+
+          </div>
+
+        <% } %>
+
+
+
+        <!-- =================================================
+             ALL REVIEWS
+        ================================================== -->
+
+        <% if(visting.reviews.length === 0) { %>
+
+
+          <div class="empty-review">
+
+            <div class="empty-review-icon">
+              💬
+            </div>
+
+            <h5 class="fw-bold mt-3">
+              No reviews yet
+            </h5>
+
+            <p class="text-muted mb-0">
+              Be the first guest to share your experience.
+            </p>
+
+          </div>
+
+
+        <% } else { %>
+
+
+          <div class="row g-3">
+
+
+            <% for(let review of visting.reviews) { %>
+
+
+              <div class="col-12 col-md-6">
+
+
+                <div class="review-card">
+
+
+                  <!-- REVIEW HEADER -->
+
+                  <div class="d-flex justify-content-between align-items-start">
+
+
+                    <div class="d-flex align-items-center gap-3">
+
+
+                      <div class="review-avatar">
+
+                        <%= review.author.username
+                          .charAt(0)
+                          .toUpperCase() %>
+
+                      </div>
+
+
+                      <div>
+
+                        <div class="fw-semibold">
+
+                          <%= review.author.username %>
+
+                        </div>
+
+                        <div class="review-date">
+                          Verified Review
+                        </div>
+
+                      </div>
+
+
+                    </div>
+
+
+                    <!-- STARS -->
+
+                    <div>
+
+                      <p
+                        class="starability-result mb-0"
+                        data-rating="<%= review.rating %>"
+                      >
+                      </p>
+
+                    </div>
+
+
+                  </div>
+
+
+
+                  <!-- COMMENT -->
+
+                  <p class="review-comment mt-4 mb-3">
+
+                    <%= review.comment %>
+
+                  </p>
+
+
+
+                  <!-- DELETE -->
+
+                  <% if(
+                    currentUser &&
+                    review.author.equals(currentUser._id)
+                  ) { %>
+
+
+                    <form
+                      method="post"
+                      action="/visting/<%= visting.id %>/review/<%= review.id %>?_method=DELETE"
+                    >
+
+                      <button
+                        type="submit"
+                        class="btn btn-sm btn-outline-danger"
+                      >
+                        Delete Review
+                      </button>
+
+                    </form>
+
+
+                  <% } %>
+
+
+                </div>
+
+              </div>
+
+
+            <% } %>
+
+
+          </div>
+
+
+        <% } %>
+
+
+      </div>
+
+
+
+      <!-- ===================================================
+           MAP
+      ==================================================== -->
+
+      <div class="map-section">
+
+
+        <h3 class="map-heading">
+          Where you will stay
+        </h3>
+
+
+        <p class="map-subtitle">
+          Explore the location and get a feel for the area around your stay.
+        </p>
+
+
+        <div class="map-wrapper">
+
+          <div id="map"></div>
+
+        </div>
+
+
+      </div>
+
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<script src="/js/map.js"></script>

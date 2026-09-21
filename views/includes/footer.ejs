@@ -1,15 +1,710 @@
-<footer>
-    <div class="f-info">
-    <div class="f-info-social">
-        <i class="fa-brands fa-instagram"></i>
-        <i class="fa-brands fa-facebook-f"></i>
-        <i class="fa-brands fa-square-linkedin"></i>
+<style>
+    /* =========================================================
+       WANDERLUST — PREMIUM DARK FOOTER
+    ========================================================= */
+
+    .wl-footer {
+        position: relative;
+        margin-top: 90px;
+
+        background: #151515;
+        color: #fff;
+
+        overflow: hidden;
+    }
+
+
+    /* =========================================================
+       BACKGROUND DECORATION
+    ========================================================= */
+
+    .wl-footer::before {
+        content: "W";
+
+        position: absolute;
+
+        right: -20px;
+        top: -70px;
+
+        font-size: 300px;
+        line-height: 1;
+
+        font-weight: 800;
+
+        color: rgba(255,255,255,.025);
+
+        pointer-events: none;
+    }
+
+
+    /* =========================================================
+       CONTAINER
+    ========================================================= */
+
+    .wl-footer-container {
+        position: relative;
+        z-index: 2;
+
+        max-width: 1240px;
+
+        margin: auto;
+
+        padding: 70px 25px 22px;
+    }
+
+
+    /* =========================================================
+       TOP AREA
+    ========================================================= */
+
+    .wl-footer-main {
+
+        display: grid;
+
+        grid-template-columns: 1.8fr 1fr 1fr 1fr;
+
+        gap: 55px;
+
+        padding-bottom: 55px;
+
+        border-bottom: 1px solid rgba(255,255,255,.1);
+    }
+
+
+    /* =========================================================
+       BRAND
+    ========================================================= */
+
+    .wl-footer-brand-section {
+        max-width: 350px;
+    }
+
+    .wl-footer-brand {
+        display: inline-flex;
+
+        align-items: center;
+
+        gap: 12px;
+
+        color: #fff;
+
+        text-decoration: none;
+    }
+
+
+    .wl-footer-logo {
+        width: 46px;
+        height: 46px;
+
+        display: flex;
+
+        align-items: center;
+        justify-content: center;
+
+        border-radius: 14px;
+
+        background: #fff;
+
+        color: #151515;
+
+        font-size: 20px;
+
+        transition: .3s ease;
+    }
+
+
+    .wl-footer-brand:hover .wl-footer-logo {
+        transform: rotate(-12deg);
+    }
+
+
+    .wl-footer-brand-name {
+        font-size: 20px;
+
+        font-weight: 800;
+
+        letter-spacing: 2px;
+    }
+
+
+    .wl-footer-brand-name span {
+        display: block;
+
+        margin-top: 2px;
+
+        color: #777;
+
+        font-size: 10px;
+
+        font-weight: 500;
+
+        letter-spacing: 1.5px;
+    }
+
+
+    .wl-footer-tagline {
+
+        max-width: 330px;
+
+        margin: 20px 0 0;
+
+        color: #999;
+
+        font-size: 14px;
+
+        line-height: 1.7;
+    }
+
+
+    /* =========================================================
+       SOCIAL
+    ========================================================= */
+
+    .wl-footer-social {
+
+        display: flex;
+
+        gap: 9px;
+
+        margin-top: 25px;
+    }
+
+
+    .wl-social {
+
+        width: 38px;
+        height: 38px;
+
+        display: flex;
+
+        align-items: center;
+        justify-content: center;
+
+        border: 1px solid rgba(255,255,255,.12);
+
+        border-radius: 11px;
+
+        color: #aaa;
+
+        text-decoration: none;
+
+        transition: .25s ease;
+    }
+
+
+    .wl-social:hover {
+
+        background: #fff;
+
+        color: #151515;
+
+        border-color: #fff;
+
+        transform: translateY(-3px);
+    }
+
+
+    /* =========================================================
+       FOOTER COLUMNS
+    ========================================================= */
+
+    .wl-footer-column h4 {
+
+        margin: 0 0 21px;
+
+        color: #fff;
+
+        font-size: 11px;
+
+        font-weight: 700;
+
+        letter-spacing: 1.5px;
+
+        text-transform: uppercase;
+    }
+
+
+    .wl-footer-column a {
+
+        display: block;
+
+        width: fit-content;
+
+        margin-bottom: 13px;
+
+        color: #888;
+
+        text-decoration: none;
+
+        font-size: 13px;
+
+        transition: .2s ease;
+    }
+
+
+    .wl-footer-column a:hover {
+
+        color: #fff;
+
+        transform: translateX(4px);
+    }
+
+
+    /* =========================================================
+       BIG STATEMENT
+    ========================================================= */
+
+    .wl-footer-statement {
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: space-between;
+
+        padding: 38px 0;
+    }
+
+
+    .wl-footer-statement-small {
+
+        margin-bottom: 8px;
+
+        color: #666;
+
+        font-size: 10px;
+
+        font-weight: 600;
+
+        letter-spacing: 2px;
+
+        text-transform: uppercase;
+    }
+
+
+    .wl-footer-statement-title {
+
+        color: #fff;
+
+        font-size: 29px;
+
+        font-weight: 500;
+
+        letter-spacing: -1px;
+    }
+
+
+    .wl-footer-compass {
+
+        width: 55px;
+        height: 55px;
+
+        display: flex;
+
+        align-items: center;
+        justify-content: center;
+
+        border: 1px solid rgba(255,255,255,.12);
+
+        border-radius: 50%;
+
+        color: #888;
+
+        font-size: 20px;
+    }
+
+
+    /* =========================================================
+       BOTTOM
+    ========================================================= */
+
+    .wl-footer-bottom {
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: space-between;
+
+        gap: 20px;
+
+        padding: 22px 0 5px;
+
+        border-top: 1px solid rgba(255,255,255,.07);
+    }
+
+
+    .wl-copyright {
+
+        color: #666;
+
+        font-size: 11px;
+    }
+
+
+    .wl-legal-links {
+
+        display: flex;
+
+        align-items: center;
+
+        gap: 23px;
+    }
+
+
+    .wl-legal-links a {
+
+        color: #666;
+
+        text-decoration: none;
+
+        font-size: 11px;
+
+        transition: .2s ease;
+    }
+
+
+    .wl-legal-links a:hover {
+        color: #fff;
+    }
+
+
+    /* =========================================================
+       TABLET
+    ========================================================= */
+
+    @media (max-width: 900px) {
+
+        .wl-footer-main {
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 42px;
+        }
+
+        .wl-footer-brand-section {
+
+            grid-column: span 2;
+
+            max-width: 500px;
+        }
+    }
+
+
+    /* =========================================================
+       MOBILE
+    ========================================================= */
+
+    @media (max-width: 600px) {
+
+        .wl-footer-container {
+
+            padding: 55px 22px 22px;
+        }
+
+
+        .wl-footer-main {
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 35px 25px;
+
+            padding-bottom: 45px;
+        }
+
+
+        .wl-footer-brand-section {
+
+            grid-column: span 2;
+        }
+
+
+        .wl-footer-statement {
+
+            padding: 30px 0;
+        }
+
+
+        .wl-footer-statement-title {
+
+            font-size: 23px;
+        }
+
+
+        .wl-footer-compass {
+
+            display: none;
+        }
+
+
+        .wl-footer-bottom {
+
+            align-items: flex-start;
+
+            flex-direction: column;
+
+            gap: 15px;
+        }
+
+
+        .wl-legal-links {
+
+            flex-wrap: wrap;
+
+            gap: 15px;
+        }
+    }
+
+
+    /* =========================================================
+       VERY SMALL
+    ========================================================= */
+
+    @media (max-width: 380px) {
+
+        .wl-footer-main {
+
+            grid-template-columns: 1fr;
+        }
+
+        .wl-footer-brand-section {
+
+            grid-column: span 1;
+        }
+    }
+
+</style>
+
+
+<footer class="wl-footer">
+
+    <div class="wl-footer-container">
+
+
+        <!-- ================= MAIN ================= -->
+
+        <div class="wl-footer-main">
+
+
+            <!-- BRAND -->
+
+            <div class="wl-footer-brand-section">
+
+                <a href="/" class="wl-footer-brand">
+
+                    <div class="wl-footer-logo">
+
+                        <i class="fa-solid fa-compass"></i>
+
+                    </div>
+
+
+                    <div class="wl-footer-brand-name">
+
+                        WANDERLUST
+
+                        <span>
+                            TRAVEL • STAYS • EXPERIENCES
+                        </span>
+
+                    </div>
+
+                </a>
+
+
+                <p class="wl-footer-tagline">
+
+                    Discover beautiful places, unforgettable
+                    stays and experiences worth remembering.
+
+                </p>
+
+
+                <!-- SOCIAL -->
+
+                <div class="wl-footer-social">
+
+                    <a
+                        href="#"
+                        class="wl-social"
+                        aria-label="Instagram"
+                        onclick="event.preventDefault();"
+                    >
+                        <i class="fa-brands fa-instagram"></i>
+                    </a>
+
+
+                    <a
+                        href="#"
+                        class="wl-social"
+                        aria-label="Facebook"
+                        onclick="event.preventDefault();"
+                    >
+                        <i class="fa-brands fa-facebook-f"></i>
+                    </a>
+
+
+                    <a
+                        href="#"
+                        class="wl-social"
+                        aria-label="LinkedIn"
+                        onclick="event.preventDefault();"
+                    >
+                        <i class="fa-brands fa-linkedin-in"></i>
+                    </a>
+
+
+                    <a
+                        href="#"
+                        class="wl-social"
+                        aria-label="GitHub"
+                        onclick="event.preventDefault();"
+                    >
+                        <i class="fa-brands fa-github"></i>
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <!-- EXPLORE -->
+
+            <div class="wl-footer-column">
+
+                <h4>Explore</h4>
+
+                <a href="/">
+                    Home
+                </a>
+
+                <a href="/visting">
+                    All stays
+                </a>
+
+                <a href="/visting">
+                    Destinations
+                </a>
+
+            </div>
+
+
+            <!-- HOST -->
+
+            <div class="wl-footer-column">
+
+                <h4>Host</h4>
+
+                <% if (currentUser) { %>
+
+                    <a href="/visting/new">
+                        Add your stay
+                    </a>
+
+                <% } else { %>
+
+                    <a href="/login">
+                        Become a host
+                    </a>
+
+                <% } %>
+
+
+                <a href="/login">
+                    Login
+                </a>
+
+                <a href="/signup">
+                    Create account
+                </a>
+
+            </div>
+
+
+            <!-- COMPANY -->
+
+            <div class="wl-footer-column">
+
+                <h4>Company</h4>
+
+                <a href="#">
+                    About Wanderlust
+                </a>
+
+                <a href="/privacy">
+                    Privacy
+                </a>
+
+                <a href="/terms">
+                    Terms
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= STATEMENT ================= -->
+
+        <div class="wl-footer-statement">
+
+            <div>
+
+                <div class="wl-footer-statement-small">
+                    Your journey starts here
+                </div>
+
+                <div class="wl-footer-statement-title">
+                    Go somewhere worth remembering.
+                </div>
+
+            </div>
+
+
+            <div class="wl-footer-compass">
+
+                <i class="fa-solid fa-compass"></i>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= BOTTOM ================= -->
+
+        <div class="wl-footer-bottom">
+
+            <div class="wl-copyright">
+
+                © <%= new Date().getFullYear() %>
+                WANDERLUST PRIVATE LIMITED.
+                All rights reserved.
+
+            </div>
+
+
+            <div class="wl-legal-links">
+
+                <a href="/privacy">
+                    Privacy
+                </a>
+
+                <a href="/terms">
+                    Terms
+                </a>
+
+                <a
+                    href="#"
+                    onclick="event.preventDefault();"
+                >
+                    Sitemap
+                </a>
+
+            </div>
+
+        </div>
+
 
     </div>
-    <div>  &copy;WANDERLUST PRIVATE LIMITED</div>
-    <div class="f-info-links">
-        <a href = "/privacy">privacy</a>
-        <a href = "/terms">terms</a>
-    </div>
-</div>
+
 </footer>
